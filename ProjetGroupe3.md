@@ -286,7 +286,7 @@ stage('Scan code (TEST)') {
                 snykSecurity(
                     snykInstallation: 'snyk@latest',
                     snykTokenId: 'snyk-token',
-                    targetFile: 'docker_node/package.json',
+                    targetFile: 'projetajc_node/package.json',
                 )
             }
         }

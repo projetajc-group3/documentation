@@ -37,7 +37,7 @@ Notre pratiques DevOps nous permet d'amélioré en continu en automatisent les p
 
 * Nous allons gérer le code source à l'aide de l'outil du système de contrôle de version Git.
 * Automatisez le processus de création de code à l'aide d'outil CI Jenkins.
-* Scannez le code pour détecter les failles de sécurité SonarQube.
+* Scannez le code pour détecter les failles avec Snyk.
 * Créez une image et la déployez avec une technologie conteneurisée Docker.
 * Faires évoluer l'application à l'aide de l'outil d'orchestration de conteneurs Kubernetes.
 

@@ -90,7 +90,7 @@ Normalement, ce type d'architecture prendrait un certain temps à configurer dan
 * SSD 20 Go
 * Sécurity Group : 22 / 80 /  8080
 
-![Screenshot](images\aws\a.png)
+![Screenshot](images/aws/a.png)
 ![Screenshot](images\aws\b.png)
 ![Screenshot](images\aws\c.png)
 ![Screenshot](images\aws\d.png)

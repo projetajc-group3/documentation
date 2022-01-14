@@ -247,6 +247,91 @@ Les commandes CMD ou RUN s'exécutent dans ce dossier
 
 - EXPOSE : L'instruction EXPOSE informe Docker que le conteneur écoute sur les ports réseau '3000' lors de l'exécution. 
 
+# Scan de sécurité et de vulnérabilité de l'application #
+
+---
+
+Avant de pousser notre application en pré-prod, nous lançons un scan du code applicatif à la recherche d'éventuelles vulnérabilités. Cela dans le but de renforcer la sécurité.
+Pour ça, nous utilisons **Snyk**, qui à l'énorme avantage d'avoir un module sur Jenkins pour une meilleure intégration de l'outil directement au pipeline. 
+
+Passons aux étapes d'installation et de configuration.
+
+## Installation ##
+
+Pour l'installation rien de plus simple. Snyk possède un module directement sur Jenkins avec toute la documentation à suivre : https://plugins.jenkins.io/snyk-security-scanner/.
+
+1. Administrer Jenkins **->** Gestion des plugins **->** Disponibles **->** Recherche de "Snyk" **->** Installer
+2. Administrer Jenkins **->** Configuration globale des outils **->** Installations Snyk
+![add_install_snyk](images/Snyk/add_install_snyk.JPG)
+
+1. On ajoute le nom de notre installation, nous l'appelons **snyk@latest**, on laisse les autres options par défaut.
+![configuration_snyk](images/Snyk/configuration_snyk.JPG)
+
+1. Création d'un compte utilisateur sur Snyk, nous prenons soin de copier la clé.
+![compte_utilisateur_snyk](images/Snyk/compte_utilisateur_snyk.JPG)
+
+1. Administrer Jenkins **->** Manage Credentials **->** Global **->** Ajouter des identifiants **->** Type : Snyk API token
+On copie ici notre clé et on lui donne un nom : **snyk-token**
+![sny_token](images/Snyk/sny_token.JPG)
+
+L'installation et la configuration sont terminées. Passons à l'utilisation du module directement dans le pipeline.
+
+## Utilisation dans le pipeline ##
+
+```Groovy
+stage('Scan code (TEST)') {
+            agent { label 'Agent-test'}
+            steps {
+                echo 'Testing...'
+                snykSecurity(
+                    snykInstallation: 'snyk@latest',
+                    snykTokenId: 'snyk-token',
+                    targetFile: 'docker_node/package.json',
+                )
+            }
+        }
+```
+
+Pour lancer un test sur le code du projet, nous avons simplement un stage dans le pipeline, que nous lançons sur l'Agent-test, créé précédemment. Nous devons fournir à Snyk le nom de notre installation Snyk et le nom du token Snyk.
+Nous précisons aussi le **targetFile** qui pointe sur le manifest du projet. Dans notre cas, c'est le fichier `package.json`.
+
+## Rapport Snyk ##
+
+En lançant le pipeline sur Jenkins, nous remarquons que le stage "Scan code (TEST)" que nous venons d'ajouter est en échec. Nous allons donc voir le détail du build. Sur la gauche, le menu "Snyk Security Report est présent. En cliquant dessus nous avons le rapport suivant :
+![snyk_report1](images/Snyk/snyk_report1.JPG)
+![snyk_report2](images/Snyk/snyk_report2.JPG)
+![snyk_report3](images/Snyk/snyk_report3.JPG)
+
+Il est clair que l'échec est dû à une vulnérabilité qui peut être corrigée simplement en utilisant une version plus à jour de la dépendance `ejs` qui se trouve dans le manifest `package.json`.
+![package_json](images/Snyk/package_json.JPG)
+
+Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipeline. Et comme attendu, cette fois Snyk n'arrête pas le pipeline !
+
+# Test de fonctionnement de l'application #
+
+---
+
+Nous avons conteneurisé notre application, nous avons construit l'image, nous l'avons lancé et nous avons même testé le code sur d'éventuelles vulnérabilités. L'étape suivante est simplement de tester si l'application est bien déployée sur l'Agent-test.
+
+Nous savons que notre application est un site internet écrit en Javacript. A l'intérieur du fichier `/views/index.ejs`, nous avons le titre du site qui est **Devops Foundation**.
+
+Le test le plus simple est de faire un stage dans le pipeline qui fera un `curl` sur le titre du site :
+
+```Groovy
+stage ('Test curl (TEST)') {
+            agent {label 'Agent-test'}
+            steps{
+                script{
+                   sh '''
+                       curl http://localhost/ | tac | tac | grep -iq "DevOps Foundation"
+                   '''
+                }
+            }
+        }
+```
+
+>Note: nous faisons ici deux **tac** en commandes pour laisser le temps au curl de se finir.
+
 # kubernetes (minikube)
 
 ## Gestion Réseau

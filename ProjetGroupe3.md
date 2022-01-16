@@ -91,12 +91,12 @@ Normalement, ce type d'architecture prendrait un certain temps à configurer dan
 * Sécurity Group : 22 / 80 /  8080
 
 ![Screenshot](images/aws/a.png)
-![Screenshot](images\aws\b.png)
-![Screenshot](images\aws\c.png)
-![Screenshot](images\aws\d.png)
-![Screenshot](images\aws\e.png)
-![Screenshot](images\aws\i.png)
-![Screenshot](images\aws\g.png)
+![Screenshot](images/aws/b.png)
+![Screenshot](images/aws/c.png)
+![Screenshot](images/aws/d.png)
+![Screenshot](images/aws/e.png)
+![Screenshot](images/aws/i.png)
+![Screenshot](images/aws/g.png)
 
 # Instance Ec2 Jenkins
 ## Nom et ID de mon 
@@ -108,7 +108,7 @@ Normalement, ce type d'architecture prendrait un certain temps à configurer dan
 ## Déverrouillage de Jenkins
 http://54.174.144.82:8080/
 
-![Screenshot](images\Jenkins\1.png)
+![Screenshot](images/Jenkins/1.png)
 
 ```txt
 L'assistant de configuration post-installation démarre.
@@ -127,12 +127,12 @@ mdp:	Umanis-2022
 
 on installe les plugins suggérés et on crée un utilisateur
 
-![Screenshot](images\Jenkins\2.png)
-![Screenshot](images\Jenkins\3.png)
-![Screenshot](images\Jenkins\4.png)
-![Screenshot](images\Jenkins\5.png)
-![Screenshot](images\Jenkins\6.png)
-![Screenshot](images\Jenkins\7.png)
+![Screenshot](images/Jenkins/2.png)
+![Screenshot](images/Jenkins/3.png)
+![Screenshot](images/Jenkins/4.png)
+![Screenshot](images/Jenkins/5.png)
+![Screenshot](images/Jenkins\6.png)
+![Screenshot](images/Jenkins/7.png)
 
 # Backend
 ##  Créer un backend de compartiment S3 
@@ -150,12 +150,12 @@ https://www.terraform.io/language/settings/backends/s3
 
 Créez un compartiment S3 à l'aide sur l'AWS. Assurez-vous de créer un nom unique. 
 
-![Screenshot](images\aws\j.png)
-![Screenshot](images\aws\k.png)
-![Screenshot](images\aws\l.png)
-![Screenshot](images\aws\m.png)
-![Screenshot](images\aws\n.png)
-![Screenshot](images\aws\o.png)
+![Screenshot](images/aws/j.png)
+![Screenshot](images/aws/k.png)
+![Screenshot](images/aws/l.png)
+![Screenshot](images/aws/m.png)
+![Screenshot](images/aws/n.png)
+![Screenshot](images/aws/o.png)
 
 
 
@@ -568,22 +568,22 @@ Kubectl est le client de Kubernetes qui est utilisé pour créer des objets. Ave
 
 - minikube start --driver=none
 
-![Screenshot](images\kubectl\1.jpg)
+![Screenshot](images/kubectl/1.jpg)
 
 - kubectl delete --all svc,deployments.apps,pod
 - kubectl apply -f nodeapp.yml 
 - kubectl describe services
 
-![Screenshot](images\kubectl\2.jpg)
+![Screenshot](images/kubectl/2.jpg)
 
 - kubectl describe deployments.apps
-![Screenshot](images\kubectl\3.jpg)
+![Screenshot](images/kubectl/3.jpg)
 
 - kubectl get pods
 - kubectl get service
 - kubectl get deployments.apps
 
-![Screenshot](images\kubectl\4.jpg)
+![Screenshot](images/kubectl/4.jpg)
 
 
 ansible-playbook -i kubernetes_role_deploy/hosts.yml kubernetes_role_deploy/kubernetes.yml --extra-vars "name_containers=webappprod image_containers=projetajcgroup3/node:1.0" || true

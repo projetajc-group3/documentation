@@ -284,7 +284,7 @@ Les commandes CMD ou RUN s'exécutent dans ce dossier
 > Note: Cette information à été trouvé dans le fichier bin/www :
 > ```Javascript
 > var port = normalizePort(process.env.PORT || '3000');
-```
+>```
 
 # Scan de sécurité et de vulnérabilité de l'application #
 

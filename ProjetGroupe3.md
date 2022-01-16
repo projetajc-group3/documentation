@@ -280,7 +280,12 @@ Les commandes CMD ou RUN s'exécutent dans ce dossier
 
 #(index.js comme nous l'avions vu au début de cet article pour démarrer le serveur NodeJS ou exécuter le fichier. Nous avons index.js dans le répertoire de l'application de la dernière étape et nous démarrons notre serveur à partir du fichier index.js.)
 
-- EXPOSE : L'instruction EXPOSE informe Docker que le conteneur écoute sur les ports réseau '3000' lors de l'exécution. 
+- EXPOSE : L'instruction EXPOSE informe Docker que le conteneur écoute sur le port réseau '3000' lors de l'exécution.
+> Note: Cette information à été trouvé dans le fichier bin/www :
+> ```Javascript
+> var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+```
 
 # Scan de sécurité et de vulnérabilité de l'application #
 

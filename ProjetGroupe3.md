@@ -131,7 +131,7 @@ on installe les plugins suggérés et on crée un utilisateur
 ![Screenshot](images/Jenkins/3.png)
 ![Screenshot](images/Jenkins/4.png)
 ![Screenshot](images/Jenkins/5.png)
-![Screenshot](images/Jenkins\6.png)
+![Screenshot](images/Jenkins/6.png)
 ![Screenshot](images/Jenkins/7.png)
 
 # Backend

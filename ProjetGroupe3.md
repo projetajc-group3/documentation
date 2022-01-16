@@ -388,6 +388,10 @@ Si le curl réussi alors c'est que le site internet a bien été déployé.
 
 # Push vers DockerHub #
 
+# Création des machines Staging et Production avec Terraform #
+
+# Déploiement en Staging avec Ansible #
+
 # kubernetes (minikube)
 
 ## Gestion Réseau

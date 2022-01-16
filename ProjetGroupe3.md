@@ -65,16 +65,16 @@ Compte GitHub
 Compte AWS
 Installer Terraform
 Installer docker
-Installer docker-compose
 Installer Kubernetes
 Utilisateur AWS avec des autorisations d'administrateur
 
 
 # Architecture 
 
-Dans ce projet, nous allons créer 3 instances AWS:
+Dans ce projet, nous allons créer 4 instances AWS:
 
 * Jenkins
+* agent jenkins
 * Pré-production
 * Production
 * S3 Bucket
@@ -166,9 +166,8 @@ Créez un compartiment S3 à l'aide sur l'AWS. Assurez-vous de créer un nom uni
 ### Liste des installations sur notre instance Jenkins:
 * Java
 * Docker
-* Docker-compose
 * Terraform
-* Kubernetes
+* Ansible
 
 ### Les commandes d'installation:
 ```sh
@@ -193,12 +192,6 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 sudo usermod -aG docker ubuntu
 sudo usermod -aG docker jenkins
-
-#Install docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
 
 #Install TERRAFORM
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
@@ -254,6 +247,36 @@ stage ('Image Build (TEST)') {
 
 # Dockerfile
 
+Notre Dockerfile est un document texte qui contient les instructions pour assembler une image Docker. Lorsque nous disons à Docker de construire notre image pour notre application en exécutant la commande docker build, Docker lit ces instructions, les exécute et crée une image Docker en conséquence. Par la suite notre image docker sera poussée sur le dépot dockerhub.
+
+- FROM: 
+Les images Docker peuvent être héritées d'autres images. Par conséquent, au lieu de créer notre propre image de base, nous utiliserons l'image officielle Node.js qui contient déjà tous les outils et packages dont nous avons besoin pour exécuter une application Node.js. 
+
+- WORKDIR: 
+Pour faciliter les choses lors de l'exécution du reste de nos commandes, créons un répertoire de travail. Cela indique à Docker d'utiliser ce chemin comme emplacement par défaut pour toutes les commandes suivantes. De cette façon, nous n'avons pas à saisir les chemins de fichiers complets, mais nous pouvons utiliser des chemins relatifs basés sur le répertoire de travail.
+
+- COPY
+Avant de pouvoir exécuter npm install, nous devons insérer nos fichiers package.json et package-lock.json dans notre images. Nous utilisons la commande COPY pour ce faire. La commande COPY prend deux paramètres : src et dest. 
+Le premier paramètre src indique à Docker quels fichiers nous souhaitons copier dans l'image. Le deuxième paramètre dest indique à Docker où vous souhaitez copier ce ou ces fichiers. 
+
+Nous allons copier le fichier package.json et le fichier package-lock.json dans notre répertoire de travail /usr/src/app.
+
+- RUN 
+La toute première chose à faire une fois que nous avons téléchargé un projet écrit en Node.js est d'installer les packages npm. Cela garantit que votre application a toutes ses dépendances installées dans le répertoire node_modules où le runtime Node pourra les trouver. 
+
+Une fois que nous avons nos fichiers dans l'image, nous pouvons utiliser la commande RUN pour exécuter la commande npm install. Cela fonctionne exactement de la même manière que si nous exécutions npm install localement sur notre machine, mais cette fois, ces modules Node seront installés dans le répertoire node_modules à l'intérieur de notre image.
+
+À ce stade, nous avons une image basée sur la version de nœud 14.16 et nous avons installé nos dépendances. 
+
+- COPY . .
+La prochaine chose que nous devons faire est d'ajouter notre code source dans l'image. Nous utiliserons la commande COPY comme nous l'avons fait avec nos fichiers package.json ci-dessus.
+
+- EXPOSE : 
+L'instruction EXPOSE informe Docker que le conteneur écoute sur les ports réseau '3000' lors de l'exécution. 
+
+- COPY :
+Maintenant, tout ce que nous avons à faire est de dire à Docker quelle commande nous voulons exécuter lorsque notre image est exécutée à l'intérieur d'un conteneur. Nous le faisons avec la commande CMD.
+
 * lien :
 https://github.com/projetajc-group3/docker_node.git
 
@@ -274,24 +297,9 @@ EXPOSE 3000
 CMD [ "node", "./bin/www" ]
 ```
 
-- FROM: indique au docker quelle image utiliser comme image de base. Ici, nous utilisons la version 14.16 du node
-- WORKDIR: indique à docker le répertoire de travail de notre image (dans notre cas, il s'agit de /usr/src/app. 
-Les commandes CMD ou RUN s'exécutent dans ce dossier
-
-- COPY signifie copie ; Ici, nous copions le fichier package.json dans home
-- RUN exécute une commande sur le répertoire de travail défini ci-dessus. La commande npm install installe les dépendances requises définies dans le package.json, que nous venons de copier dans le répertoire /app
-
-- CMD signifie commande, et ici nous exécutons node 
-
-#(index.js comme nous l'avions vu au début de cet article pour démarrer le serveur NodeJS ou exécuter le fichier. Nous avons index.js dans le répertoire de l'application de la dernière étape et nous démarrons notre serveur à partir du fichier index.js.)
-
-- EXPOSE : L'instruction EXPOSE informe Docker que le conteneur écoute sur le port réseau '3000' lors de l'exécution.
-> Note: Cette information à été trouvé dans le fichier bin/www :
-> ```Javascript
-> var port = normalizePort(process.env.PORT || '3000');
->```
-
 # Build de l'image #
+
+Maintenant que nous avons créé notre Dockerfile, construisons notre image. Pour ce faire, nous utilisons la commande docker build. La commande docker build crée des images Docker à partir d'un Dockerfile. 
 
 # Run # 
 
@@ -397,11 +405,68 @@ Si le curl réussi alors c'est que le site internet a bien été déployé.
 
 # Déploiement en Staging avec Ansible #
 
-# kubernetes (minikube)
+# Kubernetes (minikube)
+
+## Pourquoi Kubernetes ?
+Avec Docker, nous disposons de commandes simples comme docker run ou docker stop pour démarrer/arrêter un conteneur . 
+
+Contrairement à ces commandes simples qui nous permettent d'effectuer des opérations sur un seul conteneur, il n'y a pas de commande docker deploy pour pousser de nouvelles images vers un groupe d'hôtes.
+
+De nombreux outils sont apparus ces derniers temps pour résoudre ce problème « d'orchestration de conteneurs » ; les plus populaires étant Docker Swarm (qui fait maintenant partie du moteur Docker) et Kubernetes. 
+
+Tous viennent avec leurs avantages et leurs inconvénients mais, Kubernetes prend une avance considérable en termes d'utilisation et de fonctionnalités.
+
+Kubernetes (également appelé «k8») fournit de puissantes abstractions qui dissocient complètement les opérations d'application telles que les déploiements et la mise à l'échelle des opérations d'infrastructure sous-jacentes. 
+
+Ainsi, avec Kubernetes, vous ne travaillez pas avec des hôtes ou des machines virtuelles individuels sur lesquels exécuter votre code, mais plutôt Kubernetes voit l'infrastructure sous-jacente comme une mer de calcul sur laquelle placer des conteneurs.
+
+## Concepts Kubernetes
+Kubernetes a une architecture client/serveur. Le serveur Kubernetes s'exécute sur notre cluster (un d'hôte) sur lequel nous allons déployer notre application. Et nous interagissons  avec le cluster à l'aide du client kubectl.
+
+- Pods
+Un pod est l'unité de base dont traite Kubernetes, un groupe de conteneurs. S'il y a deux ou plusieurs conteneurs qui doivent toujours fonctionner ensemble et doivent être sur la même machine, faites-en un pod.
+
+- Nœud
+Un nœud est une machine physique ou virtuelle, exécutant Kubernetes, sur laquelle des pods peuvent être programmés.
+
+- Label
+Une étiquette est une paire clé/valeur utilisée pour identifier une ressource. Vous pouvez étiqueter tous vos pods servant le trafic de production avec "role=production", par exemple.
+
+- Selector
+Les sélections vous permettent de rechercher/filtrer des ressources par étiquettes. Suite à l'exemple précédent, pour obtenir tous les pods de production, votre sélecteur serait "role=production".
+
+- Service
+Un service définit un ensemble de pods (généralement sélectionnés par un "sélecteur") et un moyen d'y accéder, comme une adresse IP stable unique et le nom DNS correspondant.
 
 ## Gestion Réseau
 
-## Configurer Ingress sur kubernetes
+### Nodeport
+
+Un service NodePort est le moyen le plus simple d’aiguiller du trafic externe directement vers un Pod. NodePort, comme son nom l’indique, ouvre un port spécifique sur tous les Nœuds (les VMs), et tout trafic envoyé vers ce port est transféré vers le service.
+
+Nous allons crée un nouvel objet Service nommé "nodeport", qui cible le port TCP 3000 sur n'importe quel pod avec l'étiquette «app=nodeapp».
+
+port : port du service
+tareget port : port du pod a utiliser (doit correcpondre à l'application)
+nodeport : port utilisavle depuis l'extrieur du cluster (un genre de routeur)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport
+spec:
+  type: NodePort
+  selector:
+    app: nodeapp
+  ports:
+      #port du pod a utiliser
+    - targetPort: {{ containers_port }}
+      #port du service
+      port: {{ containers_port }}
+      #port utilisable depuis l'extrieur du cluster
+      nodePort: {{ external_port }}
+```
 
 
 ## Objectifs
@@ -409,29 +474,94 @@ Si le curl réussi alors c'est que le site internet a bien été déployé.
 • Nous allons créer un deployment avec 02 replicas de notre application node app
 • Créez un service de type "nodeport" pour exposer notre deployement précédemment crées
 • Activer l’ingress controller dans notre cluster minikube
-//Configurez une règle ingress permettant de consommer notre applications en utilisant les paramètres suivants:
-//Host: www.votreprenom-webapp.com
-//Et ajoutez convenablement notre host dans le fichier /etc/hosts
 ```
-* Nodeport
+# Déploiement dans Kubernetes
 
-Expose le service sur une IP externe au cluster. Le choix de cette valeur rend le service uniquement accessible à partir du cluster. Il s'agit du ServiceType par défaut.
-
-Nous allons crée un nouvel objet Service nommé «service-nodeport, qui cible le port TCP 80 sur n'importe quel pod avec l'étiquette «app=node-app».
-
-port : port du service
-tareget port : port du pod a utiliser (doit correcpondre à l'application)
-nodeport : port utilisavle depuis l'extrieur du cluster (un genre de routeur)
+## Définir le fichier YAML pour le déploiement dans le cluster Kubernetes
+YAML est un langage de balisage extensible lisible par l'homme. Il est utilisé dans Kubernetes pour créer un objet de manière déclarative.
 
 
-###################################
-kubectl create deploy node --image projetajcgroup3/node:1.0 --port 3000 --replicas=2
-kubectl expose deploy node --name node-svc --type NodePort --port 30001
+=> vi nodeapp.yml
 
-kubectl create deploy node --image projetajcgroup3/node:1.0 --port 3000 --replicas=2
-kubectl expose deploy node --name node-svc --type NodePort --targetPort 3000 --port 3000 --nodePort 30001
-kubectl expose deployment source-ip-app --name=clusterip --port=80 --target-port=8080
-###################################
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport
+spec:
+  type: NodePort
+  selector:
+    app: nodeapp
+  ports:
+      #port du pod a utiliser 3000
+    - targetPort: {{ containers_port }}
+      #port du service 3000
+      port: {{ containers_port }}
+      #port utilisable depuis l'extrieur du cluster 30001
+      nodePort: {{ external_port }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp
+  labels:
+    app: nodeapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodeapp
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+          #webapp
+        - name: {{ name_containers }}
+          # projetajcgroup3/node:1.0
+          image: {{ image_containers }}
+          #port du conteneur 3000
+          ports:
+            - containerPort: {{ containers_port }}
+```
+# Répartition de notre fichier YAML
+
+- apiVersion: 
+La version de l'API que vous utilisez pour créer cet objet, c'est-à-dire le déploiement - nous utilisons apps/v1 
+
+- kind: 
+Quel type d'objet créez. Dans notre cas, c'est le déploiement. 
+
+- metadata: 
+Les métadonnées sont utilisées pour organiser l'objet. Le nom de notre déploiement est "nodeapp" 
+
+- spec: 
+est utilisé pour définir la spécification de l'objet. 
+
+- replicas: 
+Combien de pods vous souhaitez déployer dans le cluster sous ce déploiement. 
+
+- template: 
+matchLabels nous souhaitons déployer deux pods exécutant des conteneurs à partir de notre image "nodeapp"
+
+- Le modèle est utilisé pour définir comment faire tourner le nouveau pod et la spécification du pod. 
+
+- metadata: 
+Métadonnées du pod nouvellement créé avec ce déploiement 
+
+- labels:
+Nous avons une étiquette - la clé est app et la valeur est nodeapp 
+
+- spec:Spécifications des conteneurs 
+
+- name:
+Nom du conteneur 
+
+- image
+L'image qui peut être utilisée par le conteneur 
+
 
 ###################################
 apiVersion: v1
@@ -561,13 +691,160 @@ L'image qui peut être utilisée par le conteneur
 
 Quelle option de port utiliser Nous utilisons containerPort 3000
 
-
-
 Comme nous avons créé le fichier YAML, nous pouvons continuer et créer un déploiement à partir de ce fichier YAML.
+
+# Ansible
+
+Ansible va nous permetre de déployer rapidement et facilement nos applications tel que Kubernetes dans notre environement de production. Nous n'aurons pas besoin d'écrire du code pour automatiser notre installations. Nous allons listez les tâches à effectuer en écrivant un playbook, et Ansible trouvera comment amener vos systèmes à l'état dans lequel nous voulons qu'ils soient. 
+
+En d'autres termes, nous n'aurons pas à configurer manuellement l'applications sur notre enviroenemt de production que nous avons crée à l'aide de terraform. Lorsque nous exécuterons notre playbook à partir de notre serveur Jenkins depuis le Jenkinsfile, Ansible utilisera le protocole SSH pour communiquer avec notre hôte distant de production et exécuter toutes les tâches (Tasks).
+
+# Comment fonctionne Ansible
+Dans Ansible, il existe deux catégories d'ordinateurs: le nœud maître (master) et les nœuds esclaves (slaves). 
+
+Dans notre cas le nœud maître est une instance Ec2 sur laquel est installé jenkin ansi que l'outil Ansible. Notre instance Jenkins fait appel à l'outil Ansible afin d'éxécuter différentes tache depuis le jenkinsfile.
+
+Ansible fonctionne en se connectant à des nœuds en SSH et en y poussant de petits programmes, appelés modules. Ces modules sont définis dans un fichier nommé le Playbook. Dans notre cas, voici la liste des modules utilisés:
+
+- shell
+- command
+- template
+
+Nous avons créé un template de fichier qui contient un manifest détaillant le deploiement de notre application Node, il sera déployé sur l'instance de production à l’aide du module template, qui prend en charge le transfert d’un fichier local du nœud de contrôle vers l'hôte géré. Le template contient les instructions de base qui seront ensuite recopié. Il contient également des variables qui seront remplacées individuellement sur la machine cible.
+
+Le nœud maître, se base sur un fichier d'inventaire qui fournit la liste des hôtes sur lesquels les modules Ansible doivent être exécutés.
+
+Ansible exécute ces modules en SSH et les supprime une fois terminé. La seule condition requise pour cette interaction est que votre nœud maître Ansible dispose d'un accès de connexion aux nœuds esclaves. Les clés SSH sont le moyen le plus courant de fournir un accès.
+
+Dans notre cas Ansible et ça commande ansible-plyabook est appelé depuis notre jenkinsfile avec les commandes suivantes:
+
+```yaml
+git clone https://github.com/projetajc-group3/docker_role_deploy.git
+ansible-galaxy install -r docker_role_deploy/roles/requirements.yml
+ansible-playbook -i docker_role_deploy/hosts.yml docker_role_deploy/docker.yml
+git clone https://github.com/projetajc-group3/kubernetes_role_deploy.git
+ansible-galaxy install -r kubernetes_role_deploy/roles/requirements.yml
+ansible-playbook -i kubernetes_role_deploy/hosts.yml kubernetes_role_deploy/kubernetes.yml
+```
+![Screenshot](images\rolekubectl\1.png)
+
+## Role Ansible
+
+La configuration manuelle de notre cluster Kubernetes sur notre instance Ec2 est une tâche fastidieuse et prendrai également beaucoup de temps. Et aujourd'hui, avec la philosophie devops et l'automatisation, nous avons automatiser cette tâche. Dans le cadre de notre projet nous allons utiliser Ansible Role pour automatiser la configuration du cluster Kubernetes sur l'instance AWS EC2 de production.
+
+### Définition du role
+
+Les rôles sont une caractéristique robuste d'Ansible qui facilitent la réutilisation, de notre application Node's et simplifient l'écriture de notre Playbooks complexes en le divisant logiquement en composants réutilisables et en profiter par la même occasion pour le rendre plus facile à lire.
+
+Il est possible de comparer les rôles Ansible aux librairies dans les langages de programmation. En effet, en programmation les librairies contiennent leurs propres variables et fonctions que vous pouvez réutiliser pour vos différents projets de programmation. C'est le cas aussi pour les rôles, qui possèdent leurs propres tâches, variables.
+
+Nos rôle sont essentiellement limité à des fonctionnalités particulières:
+
+
+- installation de Docker
+- installation de Kubernetes
+
+![Screenshot](images\rolekubectl\3.png)
+
+kubernetes_role_deploy/kubernetes.yml
+
+```yaml
+- name: deploy kubernetes using a role
+  hosts: localhost
+  become: true
+  roles:
+    - kubernetes_role
+```
+
+### Manifeste d'installation de Kubernetes
+
+kubernetes_role/tasks/main.yml
+
+```yaml
+---
+# tasks file for install kubernetes
+- name: install tools 
+  shell: |
+    sudo apt-get -y update
+    sudo apt install -y qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils virt-manager
+    sudo apt-get install -y socat
+    sudo apt-get install -y conntrack
+    sudo apt-get -y install wget
+- name: "Kubernetes bin"
+  shell: |
+    sudo wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo chmod +x minikube-linux-amd64
+    sudo mv minikube-linux-amd64 /usr/bin/minikube
+- name: "Kubernetes ctl"
+  shell: |
+    sudo curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    sudo chmod +x kubectl
+    sudo mv kubectl  /usr/bin/
+    sudo echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+    sudo systemctl enable docker.service
+- name: "Kubernetes launch"
+  command: "minikube start --driver=none"
+
+- name: "Create Manifests Kubernetes template" 
+  template:
+    src: "nodeapp.yml.j2"
+    dest: "/home/ubuntu/nodeapp.yml"
+  
+- name: "Deploy Manifests Kubernetes"
+  command: "kubectl apply -f nodeapp.yml"
+  args:
+    chdir: "/home/ubuntu/"
+```
+
+Ce manifestes contient les différentes instruction afin d'installer kubernetes à l'aide de différentes taches.
+
+![Screenshot](images\rolekubectl\2.png)
+
+Ces différents repertoire dans git seront utilisé afin de créer notre role
+
+Comme nous avons créé le fichier YAML, nous pouvons continuer et créer un déploiement à partir de ce fichier YAML. Pour cela en nous pouvons utiliser la commande suivante. 
 
 kubectl create -f deploy.yaml
 
-Kubectl est le client de Kubernetes qui est utilisé pour créer des objets. Avec kubectl create, vous pouvez créer n'importe quel objet -f indique que nous utilisons un fichier et deploy.yaml est le fichier qui sera utilisé pour créer un objet. Vous pouvez vérifier le déploiement avec la commande suivante :
+
+
+# Pre-requis
+
+# install kubernetes avec Ansible
+
+```ruby
+- name: install tools 
+  shell: |
+    sudo apt-get -y update
+    sudo apt install -y qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils virt-manager
+    sudo apt-get install -y socat
+    sudo apt-get install -y conntrack
+    sudo apt-get -y install wget
+- name: "Kubernetes bin"
+  shell: |
+    sudo wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo chmod +x minikube-linux-amd64
+    sudo mv minikube-linux-amd64 /usr/bin/minikube
+- name: "Kubernetes ctl"
+  shell: |
+    sudo curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    sudo chmod +x kubectl
+    sudo mv kubectl  /usr/bin/
+    sudo echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+    sudo systemctl enable docker.service
+- name: "Kubernetes launch"
+  command: "minikube start --driver=none"
+
+- name: "Create Manifests Kubernetes template" 
+  template:
+    src: "nodeapp.yml.j2"
+    dest: "/home/ubuntu/nodeapp.yml"
+  
+- name: "Deploy Manifests Kubernetes"
+  command: "kubectl apply -f nodeapp.yml"
+  args:
+    chdir: "/home/ubuntu/"
+```
 
 # Les commpandes de lancement
 

@@ -220,7 +220,11 @@ Ce nouvel agent s'occupera exclusivement de tout la partie consistant à constru
 
 ## Création d'une machine test sur AWS ##
 
-Pour cet agent nous voulons utiliser une machine AWS qui servira seulement d'hôte à l'agent Jenkins. 
+Pour cet agent nous voulons utiliser une machine AWS qui servira seulement d'hôte à l'agent Jenkins:
+* t2.large
+* SSD 20 Go
+* Sécurity Group : 22 / 80 /  8080
+* 
 Nous y installons seulement Docker dessus.
 
 ## Création de l'Agent-test ##

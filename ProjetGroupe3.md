@@ -286,6 +286,10 @@ Les commandes CMD ou RUN s'exécutent dans ce dossier
 > var port = normalizePort(process.env.PORT || '3000');
 >```
 
+# Build de l'image #
+
+# Run # 
+
 # Scan de sécurité et de vulnérabilité de l'application #
 
 Avant de pousser notre application en pré-prod, nous lançons un scan du code applicatif à la recherche d'éventuelles vulnérabilités. Cela dans le but de renforcer la sécurité.
@@ -381,6 +385,8 @@ stage ('Test curl (TEST)') {
 ```
 Si le curl réussi alors c'est que le site internet a bien été déployé.
 >Note: nous faisons ici deux **tac** en commandes pour laisser le temps au curl de se finir.
+
+# Push vers DockerHub #
 
 # kubernetes (minikube)
 

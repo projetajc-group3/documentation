@@ -286,7 +286,7 @@ stage('Scan code (TEST)') {
                 snykSecurity(
                     snykInstallation: 'snyk@latest',
                     snykTokenId: 'snyk-token',
-                    targetFile: 'projetajc_node/package.json',
+                    targetFile: 'docker_node/package.json',
                 )
             }
         }
@@ -297,15 +297,30 @@ Nous précisons aussi le **targetFile** qui pointe sur le manifest du projet. Da
 
 ## Rapport Snyk ##
 
-En lançant le pipeline sur Jenkins, nous remarquons que le stage "Scan code (TEST)" que nous venons d'ajouter est en échec. Nous allons donc voir le détail du build. Sur la gauche, le menu "Snyk Security Report est présent. En cliquant dessus nous avons le rapport suivant :
+En lançant le pipeline sur Jenkins, nous remarquons que le stage "Scan code (TEST)" que nous venons d'ajouter est en échec.
+![failed_build_snyk](images/Snyk/failed_build_snyk.JPG)
+
+Nous allons donc voir le détail du build. Sur la gauche, le menu "Snyk Security Report" est présent. En cliquant dessus nous avons le rapport suivant :
 ![snyk_report1](images/Snyk/snyk_report1.JPG)
 ![snyk_report2](images/Snyk/snyk_report2.JPG)
 ![snyk_report3](images/Snyk/snyk_report3.JPG)
 
-Il est clair que l'échec est dû à une vulnérabilité qui peut être corrigée simplement en utilisant une version plus à jour de la dépendance `ejs` qui se trouve dans le manifest `package.json`.
-![package_json](images/Snyk/package_json.JPG)
+Il est clair que l'échec est dû à une vulnérabilité qui peut être corrigée simplement en utilisant une version plus à jour de la dépendance `ejs`.
 
-Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipeline. Et comme attendu, cette fois Snyk n'arrête pas le pipeline !
+Pour ça on met à jour le fichier `package.json`
+![package_json](images/Snyk/package_json_after.JPG)
+
+On met également à jour le fichier `package-lock.json` :
+![package_json_lock](images/Snyk/package_json_lock_after.JPG)
+
+Enfin, il reste à remplacer les fichiers présents dans `node_modules/ejs` par les fichiers de la version 3.1.6.
+
+Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipeline. Et comme attendu, cette fois Snyk n'arrête pas le pipeline, et le rapport est vide !
+
+![passed_build_snyk](images/Snyk/passed_build_snyk.JPG)
+![security_report_after_update](images/Snyk/security_report_after_update.JPG)
+
+> Note: Nous nous sommes permis de corriger cette erreur pour des raisons de démonstrations du module Snyk. En production réelle la bonne méthode serait plutôt de prévenir l'équipe de développement du problème.
 
 # Test de fonctionnement de l'application #
 
@@ -329,7 +344,7 @@ stage ('Test curl (TEST)') {
             }
         }
 ```
-
+Si le curl réussi alors c'est que le site internet à bien été déployé.
 >Note: nous faisons ici deux **tac** en commandes pour laisser le temps au curl de se finir.
 
 # kubernetes (minikube)

@@ -726,7 +726,7 @@ git clone https://github.com/projetajc-group3/kubernetes_role_deploy.git
 ansible-galaxy install -r kubernetes_role_deploy/roles/requirements.yml
 ansible-playbook -i kubernetes_role_deploy/hosts.yml kubernetes_role_deploy/kubernetes.yml
 ```
-![Screenshot](images\rolekubectl\1.png)
+![Screenshot](images/rolekubectl/1.png)
 
 ## Role Ansible
 
@@ -744,7 +744,7 @@ Nos rôle sont essentiellement limité à des fonctionnalités particulières:
 - installation de Docker
 - installation de Kubernetes
 
-![Screenshot](images\rolekubectl\3.png)
+![Screenshot](images/rolekubectl/3.png)
 
 kubernetes_role_deploy/kubernetes.yml
 
@@ -798,7 +798,7 @@ kubernetes_role/tasks/main.yml
 
 Ce manifestes contient les différentes instruction afin d'installer kubernetes à l'aide de différentes taches.
 
-![Screenshot](images\rolekubectl\2.png)
+![Screenshot](images/rolekubectl/2.png)
 
 Ces différents repertoire dans git seront utilisé afin de créer notre role
 

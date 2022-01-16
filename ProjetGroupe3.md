@@ -218,13 +218,13 @@ Nous voulons créer un agent Jenkins en plus de l'agent master.
 
 Ce nouvel agent s'occupera exclusivement de tout la partie consistant à construire l'image docker, la lancer, la scanner, la tester et la pousser sur Dockerhub. Une fois ces tâches effectuées l'agent effacera toutes les données qui lui ont été passées pour être de nouveau fraîchement disponible pour un future build.
 
-## Création d'une machine test sur AWS ##
+## Création d'une machine pour l'agent test sur AWS ##
 
 Pour cet agent nous voulons utiliser une machine AWS qui servira seulement d'hôte à l'agent Jenkins:
 * t2.large
 * SSD 20 Go
 * Sécurity Group : 22 / 80 /  8080
-* 
+
 Nous y installons seulement Docker dessus.
 
 ## Création de l'Agent-test ##

@@ -212,6 +212,41 @@ sudo apt-get update
 sudo apt-get install -y kubectl
 ```
 
+# Création d'un agent Jenkins #
+
+Nous voulons créer un agent Jenkins en plus de l'agent master.
+
+Ce nouvel agent s'occupera exclusivement de tout la partie consistant à construire l'image docker, la lancer, la scanner, la tester et la pousser sur Dockerhub. Une fois ces tâches effectuées l'agent effacera toutes les données qui lui ont été passées pour être de nouveau fraîchement disponible pour un future build.
+
+## Création d'une machine test sur AWS ##
+
+Pour cet agent nous voulons utiliser une machine AWS qui servira seulement d'hôte à l'agent Jenkins.
+
+## Création de l'Agent-test ##
+
+Commençons par créer cet `Agent-test` sur l'interface de Jenkins :
+
+1. Administrer Jenkins **->** Gérer les noeuds **->** Créer un noeud:
+![creer_un_noeud](images/Agent_jenkins/creer_un_noeud.JPG)
+
+2. Nous lui donnons le nom de `Agent-test` et nous le réservons pour les jobs qui lui sont associés.
+On se connecte sur celui-ci en SSH en lui précisant l'hôte et les credentials.
+![creation_noeud1](images/Agent_jenkins/creation_noeud1.JPG)
+![creation_noeud2](images/Agent_jenkins/creation_noeud2.JPG)
+
+## Utilisation de l'Agent-test ##
+
+Il reste simplement à faire appel à cet agent dans le pipeline là ou on le souhaite :
+
+```Groovy
+stage ('Image Build (TEST)') {
+    agent {label 'Agent-test'}
+        steps{
+             ...
+        }
+}
+```
+
 # Dockerfile
 
 * lien :

@@ -249,8 +249,6 @@ Les commandes CMD ou RUN s'exécutent dans ce dossier
 
 # Scan de sécurité et de vulnérabilité de l'application #
 
----
-
 Avant de pousser notre application en pré-prod, nous lançons un scan du code applicatif à la recherche d'éventuelles vulnérabilités. Cela dans le but de renforcer la sécurité.
 Pour ça, nous utilisons **Snyk**, qui à l'énorme avantage d'avoir un module sur Jenkins pour une meilleure intégration de l'outil directement au pipeline. 
 
@@ -324,8 +322,6 @@ Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipel
 
 # Test de fonctionnement de l'application #
 
----
-
 Nous avons conteneurisé notre application, nous avons construit l'image, nous l'avons lancé et nous avons même testé le code sur d'éventuelles vulnérabilités. L'étape suivante est simplement de tester si l'application est bien déployée sur l'Agent-test.
 
 Nous savons que notre application est un site internet écrit en Javacript. A l'intérieur du fichier `/views/index.ejs`, nous avons le titre du site qui est **Devops Foundation**.
@@ -344,7 +340,7 @@ stage ('Test curl (TEST)') {
             }
         }
 ```
-Si le curl réussi alors c'est que le site internet à bien été déployé.
+Si le curl réussi alors c'est que le site internet a bien été déployé.
 >Note: nous faisons ici deux **tac** en commandes pour laisser le temps au curl de se finir.
 
 # kubernetes (minikube)

@@ -1190,7 +1190,8 @@ Playbook qui lance le "docker_role"
 
 * Création de credentials pour se connecter en ssh à l'environnement de preproduction
 
-!!!!!!!!!!!IMAGES!!!!!!!!!!!!!!!
+![credentials1](images/Jenkins/credentials1.JPG)
+![credentials2](images/Jenkins/credentials2.JPG)
 
 * Ajout du stage au Jenkinsfile
 <br>

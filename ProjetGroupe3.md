@@ -1232,7 +1232,7 @@ Voici le stage que nous rajoutons au Jenkinsfile:
 
 Nous allons utiliser Kubernetes pour disposer d’une plateforme de déploiement résiliente et à haute disponibilité avec une configuration et une gestion simple à l'aide de nos manifestes. 
 
-Kubernetes nous permet de d'orchester nos conteneurs sur notre envirronement de production et de faire appel à l'image que nous avons contenerisé et déployé dans le registry Docker Hub.  
+Kubernetes nous permet d'orchester nos conteneurs sur notre environement de production et de faire appel à l'image que nous avons conteneurisé et déployé dans le registry Docker Hub.  
 
 
 <br>
@@ -1260,7 +1260,7 @@ Voici son arborescence:
 
 * tasks/main.yml
 
-Ce manifest s'assure de l'installation de kubernetes et lance son service. Il contient les différentes instruction afin d'installer kubernetes à l'aide de différentes taches.
+Ce manifest s'assure de l'installation de kubernetes et lance son service. Il contient les différentes instructions afin d'installer kubernetes à l'aide de différentes taches.
 
 
 ```sh
@@ -1316,11 +1316,11 @@ galaxy_info:
 
 * templates/nodeapp.yml.j2
 
-Nous avons créé un template de fichier qui contient un manifest détaillant le deploiement de notre application Node, il sera déployé sur l'instance de production à l’aide du module template, qui prend en charge le transfert d’un fichier local du nœud de contrôle vers l'hôte géré. Le template contient les instructions de base qui seront ensuite recopié. Il contient également des variables qui seront remplacées individuellement sur la machine cible.
+Nous avons créé un template de fichier qui contient un manifest détaillant le deploiement de notre application Node, il sera déployé sur l'instance de production à l’aide du module template, qui prend en charge le transfert d’un fichier local du nœud de contrôle vers l'hôte géré. Le template contient les instructions de base qui seront ensuite recopiées. Il contient également des variables qui seront remplacées individuellement sur la machine cible.
 
 • Nous allons créer un deployment avec 02 replicas de notre application node app
 
-• Créez un service de type "nodeport" pour exposer notre deployement précédemment crées
+• Créez un service de type "nodeport" pour exposer notre deployement précédemment créé
 
 • Nodeport
 
@@ -1332,7 +1332,7 @@ Nous allons crée un nouvel objet Service nommé "nodeport", qui cible le port T
 
 - tareget port : port du pod a utiliser (doit correcpondre à l'application)
 
-- nodeport : port utilisavle depuis l'extrieur du cluster (un genre de routeur)
+- nodeport : port utilisable depuis l'extrieur du cluster (un genre de routeur)
 
 
 ```sh

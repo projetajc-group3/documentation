@@ -246,7 +246,9 @@ Nous voulons nous assurer que notre option backend verrouille notre état lorsqu
 
 &nbsp;&nbsp;&nbsp; 1- Création du pipeline dans Jenkins
 
-!!!!!!!!!!!!!!!IMAGE!!!!!!!!!!!!!
+![creation_pipeline](images/Jenkins/creation_pipeline.JPG)
+![pipeline_general](images/Jenkins/pipeline_general.JPG)
+![pipeline_config](images/Jenkins/pipeline_config.JPG)
 
 &nbsp;&nbsp;&nbsp; 2- Création du Jenkinsfile
 

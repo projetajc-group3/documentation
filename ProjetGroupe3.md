@@ -465,7 +465,7 @@ Nous prenons soin de copier la clé.
 Administrer Jenkins **->**  Manage Credentials **->**  Global **->**  Ajouter des credentials **->**  Type "Secret text" et on colle dans "secret" le token Docker que nous avons créé sur Docker-hub.
 <br>
 
-![credentials_jenkins](images/dockerhub/credentials_jenkins.JPG)
+![credentials_jenkins](images/run_pipeline/Capture104.JPG)
 <br>
 
 ![credential_dockerhub](images/dockerhub/credential_dockerhub.JPG)

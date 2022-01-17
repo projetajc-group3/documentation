@@ -407,6 +407,52 @@ Si le curl réussi alors c'est que le site internet a bien été déployé.
 
 # Push vers DockerHub #
 
+## Création credential pour Dockerhub ##
+
+Après le build, nous comptons sauvegarder notre artefact sur le repository Dockerhub. Nous devons alors communiquer au serveur Jenkins les credentials nécessaires pour s'y connecter dessus et pousser l'artefact créé sur l'Agent-test.
+
+Sur Dockerhub:
+
+Account Settings -> Security -> New Access Token. Nous prenons soin de copier la clé.
+
+![compte_dockerhub](images/dockerhub/compte_dockerhub.JPG)
+
+![settings_dockerhub](images/dockerhub/settings_dockerhub.JPG)
+
+![token_generation_dockerhub](images/dockerhub/token_generation_dockerhub.JPG)
+
+Sur Jenkins:
+
+Administrer Jenkins -> Manage Credentials -> Global -> Ajouter des credentials -> Type "Secret text" et on colle dans "secret" le token Docker que nous avons créé sur Docker-hub
+
+![credentials_jenkins](images/dockerhub/credentials_jenkins.JPG)
+
+![credential_dockerhub](images/dockerhub/credential_dockerhub.JPG)
+
+## Docker Push ##
+
+Sur le pipeline Jenkins nous avons un stage qui s'occupe de pousser sur Dockerhub l'image que nous venons de construire et de nettoyer notre `Agent-test`. Il s'agit simplement de se connecter sur le Dockerhub à l'aide de notre username et le credential tout juste créé. On pousse ensuite l'image. Ensuite on stop et supprime le conteneurs et l'image utilisé.
+
+```Groovy
+stage ('Clean test environment and save artifact (TEST)') {
+           agent {label 'Agent-test'}
+           environment{
+               PASSWORD = credentials('docker-token')
+           }
+           steps {
+               script{
+                   sh '''
+                       docker login -u $USERNAME -p $PASSWORD
+                       docker push $USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                       docker stop $CONTAINER_NAME || true
+                       docker rm $CONTAINER_NAME || true
+                       docker rmi $USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                   '''
+               }
+           }
+       }
+```
+
 # Création des machines Staging et Production avec Terraform #
 
 # Déploiement en Staging avec Ansible #

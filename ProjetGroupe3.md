@@ -297,8 +297,8 @@ sudo usermod -aG docker jenkins
 
 &nbsp;&nbsp;&nbsp; 2- Création du Dockerfile
 
-* Nous créons un repository docker_node sur lequel nous stockons l'application à déployer:<br>
-https://github.com/projetajc-group3/docker_node.git
+* Nous créons un repository projetajc_node sur lequel nous stockons l'application à déployer (fork):<br>
+https://github.com/projetajc-group3/projetajc_node.git
 
 * Nous ajoutons à la racine de ce repository le Dockerfile, qui va builder l'image, que nous avons écrit comme suit:
 ```ruby
@@ -376,7 +376,7 @@ stage ('Test curl (TEST)') {
             steps{
                 script{
                    sh '''
-                       curl http://localhost/ | tac | tac | grep -iq "DevOps Foundation"
+                       curl http://localhost:$TEST_EXTERNAL_PORT/  | tac | tac | grep -iq "DevOps Foundation"
                    '''
                 }
             }
@@ -434,7 +434,7 @@ stage('Scan code (TEST)') {
                 snykSecurity(
                     snykInstallation: 'snyk@latest',
                     snykTokenId: 'snyk-token',
-                    targetFile: 'docker_node/package.json',
+                    targetFile: 'projetajc_node/package.json',
                 )
             }
         }

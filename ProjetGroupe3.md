@@ -1469,7 +1469,14 @@ tage ('Deploy application (PRODUCTION)') {
     }
 ```
 
-## Rapport Snyk ##
+## IV- Run du Pipeline Jenkins ##
+
+Tout est enfin prêt pour le test final du lancement du Pipeline Jenkins. 
+Plusieurs points sont à vérifier.
+
+### A- Test ###
+
+#### Rapport Snyk ####
 
 En lançant le pipeline sur Jenkins, nous remarquons que le stage "Scan code (TEST)" que nous venons d'ajouter est en échec.
 ![failed_build_snyk](images/Snyk/failed_build_snyk.JPG)
@@ -1496,13 +1503,27 @@ Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipel
 
 > Note: Nous nous sommes permis de corriger cette erreur pour des raisons de démonstrations du module Snyk. En production réelle la bonne méthode serait plutôt de prévenir l'équipe de développement du problème.
 
+### B- Stagging ###
 
+Arrivé en `Staging`, nous vérifions que notre machine ec2 a bien été créé :
+![aws_preprod](images/run_pipeline/aws_preprod.JPG)
 
+Rappeleons que le port que nous avons variabilisé dans ce pipeline à une valeur affecté de 30000 lors de ce test. Donc en visitant http://107.21.172.98:30001 nous devrions voir notre application. Et effectivement :
+![test_site_preprod](images/run_pipeline/test_site_preprod.JPG)
 
+### C- Production ###
 
-# Automatisation et posts actions #
+Passons à la production. Ici nous devons d'abord approuver le déploiement :
+![approve_deploy](images/run_pipeline/approve_deploy.JPG)
 
-## Github Webhook ##
+Verifions ensuite si notre machine a été créée :
+![aws_prod](images/run_pipeline/aws_prod.JPG)
+
+Enfin de la même manière qu'en Staging, le port variabilisé à été affecté avec la valeur 30000 pour ce test. L'application devrait être déployé sur http://44.202.23.129:30000 ce qui est bien le cas :
+![test_site_prod](images/run_pipeline/test_site_prod.JPG)
+
+### D- Eléments supplémentaires ###
+#### Github Webhook ####
 
 Nous souhaitons que le pipeline CICD se lance automatiquement après chaque commit sur le projet `projetajc-node` sur notre serveur de gestion de version Github. Pour ce faire, nous configurons un webhook comme trigger pour déclencher notre pipeline CICD.
 
@@ -1524,7 +1545,7 @@ Enfin, on prend le soin de relier Github à notre serveur Jenkins. Pour ce faire
 
 ![webhook_github](images/webhook/webhook_github.JPG)
 
-## Github Build Status ##
+#### Github Build Status ####
 
 Pour avoir le badge `build passing` sur le README de notre projet sur le repo Github, nous installons le plugin "Embeddable Build Status"
 
@@ -1541,7 +1562,7 @@ Nous collons ce lien à la fin de notre fichier `README.md` de projet `projetajc
 ![link_on_readme](images/build_status/link_on_readme.JPG)
 ![status_passing](images/build_status/status_passing.JPG)
 
-## Notifications Slack ##
+#### Notifications Slack ####
 
 Nous voulons aussi que notre pipeline puisse communiquer avec Slack sur le succès ou l'échec du pipeline. Ainsi que les adresses IP utilisées sur les machines de staging et production. Pour l'occasion nous créons un compte Slack.
 

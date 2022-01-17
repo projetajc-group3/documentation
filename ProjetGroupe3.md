@@ -1,10 +1,10 @@
 #  Devops Project 2 : CICD d'une Application node
 
-* Objectif
+* Objectif:
 
 Déploiement d'une application Node.js dans un pipeline Jenkins
 
-* Equipe :
+* Equipe 3:
     - Abdelkader RAHMANI
     - Aurelien DAIX
     - Oussama ZAID 
@@ -36,9 +36,6 @@ Notre pratiques DevOps nous permet d'amélioré en continu en automatisent les p
 
 * Déploiement continu. À l'instar de la livraison continue, cette pratique automatise la publication d'un code nouveau ou modifié dans l'environnement de production. Les entreprises peuvent être amenées à publier plusieurs fois par jour des modifications du code ou des fonctionnalités. Dans un contexte de déploiement continu, les technologies de conteneur comme Docker et Kubernetes assurent la cohérence du code entre plusieurs plateformes et environnements.
 
-* Surveillance continue. Cette pratique prévoit une surveillance continue du code exécuté et de l'infrastructure sous-jacente. Les développeurs reçoivent des retours sur les bogues ou sur les problèmes.
-
-
 
 ## Nos outils DevOps
 
@@ -47,9 +44,6 @@ Notre pratiques DevOps nous permet d'amélioré en continu en automatisent les p
 * Scannez le code pour détecter les failles avec Snyk.
 * Créez une image et la déployez avec une technologie conteneurisée Docker.
 * Faires évoluer l'application à l'aide de l'outil d'orchestration de conteneurs Kubernetes.
-
-## Jenkins 
-Pipeline Jenkins  est un serveur d'automatisation autonome et open source utilisé pour automatiser les tâches associées à la création, aux tests et à la livraison/déploiement de logiciels. Jenkins Pipeline implémente des pipelines de livraison continue dans Jenkins grâce à l'utilisation de plugins et d'un fichier Jenkins. Le fichier Jenkins peut être déclaratif ou scripté et contient une liste d'étapes à suivre par le pipeline.
 
 ## Infrastructure en tant que code 
 
@@ -71,6 +65,8 @@ Dans cette piste, nous couvrirons les fonctions de Terraform pour créer une inf
 
 
 ## B- Création des serveurs pour Jenkins sur AWS 
+
+Nous utilisons ici Jenkins qui un serveur d'automatisation autonome et open source utilisé pour automatiser les tâches associées à la création, aux tests et à la livraison/déploiement de logiciels. Jenkins Pipeline implémente des pipelines de livraison continue dans Jenkins grâce à l'utilisation de plugins et d'un fichier Jenkins.
 
 Dans ce projet, nous allons créer 2 instances AWS pour Jenkins:
 
@@ -1660,14 +1656,16 @@ Le résultat sur Slack est comme suit :
 
 <br>
 
-# V- Conclusion
-
-<br>
-
-# VI- Axe d'amélioration ##
+# V- Axes d'amélioration
 
 Plusieurs points de notre projet peuvent être améliorés:
 
-### Jenkinsfile ###
+## A- Jenkinsfile
+<br>
 
 Quelques ligne de commandes du Jenkinsfile sont redondantes avec les roles Ansible que nous avont créés. Les **stages** pourrait aussi mieux gérer les erreurs potentiel avec plus de `catchError`
+
+## B- Monitoring
+<br>
+
+La mise en place d'un outil de monitoring de la production serait un plus pour le maintient de l'application mais aussi pour surveiller et améliorer les performance de déploiement ce qsui s'inscrit dans la philosophie DEVOPS.

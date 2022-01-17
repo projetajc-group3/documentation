@@ -1316,7 +1316,20 @@ galaxy_info:
 Nous avons créé un template de fichier qui contient un manifest détaillant le deploiement de notre application Node, il sera déployé sur l'instance de production à l’aide du module template, qui prend en charge le transfert d’un fichier local du nœud de contrôle vers l'hôte géré. Le template contient les instructions de base qui seront ensuite recopié. Il contient également des variables qui seront remplacées individuellement sur la machine cible.
 
 • Nous allons créer un deployment avec 02 replicas de notre application node app
+
 • Créez un service de type "nodeport" pour exposer notre deployement précédemment crées
+
+* Nodeport
+
+Un service NodePort est le moyen le plus simple d’aiguiller du trafic externe directement vers un Pod. NodePort, comme son nom l’indique, ouvre un port spécifique sur tous les Nœuds (les VMs), et tout trafic envoyé vers ce port est transféré vers le service.
+
+Nous allons crée un nouvel objet Service nommé "nodeport", qui cible le port TCP 3000 sur n'importe quel pod avec l'étiquette «app=nodeapp».
+
+- port : port du service
+
+- tareget port : port du pod a utiliser (doit correcpondre à l'application)
+
+- nodeport : port utilisavle depuis l'extrieur du cluster (un genre de routeur)
 
 
 ```sh
@@ -1359,16 +1372,6 @@ spec:
           ports:
             - containerPort: {{ containers_port }}
 ```
-
-* Nodeport
-
-Un service NodePort est le moyen le plus simple d’aiguiller du trafic externe directement vers un Pod. NodePort, comme son nom l’indique, ouvre un port spécifique sur tous les Nœuds (les VMs), et tout trafic envoyé vers ce port est transféré vers le service.
-
-Nous allons crée un nouvel objet Service nommé "nodeport", qui cible le port TCP 3000 sur n'importe quel pod avec l'étiquette «app=nodeapp».
-
-port : port du service
-tareget port : port du pod a utiliser (doit correcpondre à l'application)
-nodeport : port utilisavle depuis l'extrieur du cluster (un genre de routeur)
 
 <br>
 &nbsp;&nbsp;&nbsp; 2- Création d'un deploiement pour "kubernetes_role"

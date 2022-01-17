@@ -12,7 +12,7 @@ Déploiement d'une application Node.js dans un pipeline Jenkins
 
 # I- Introduction
 
-## La Philosophie DevOps
+## A- La Philosophie DevOps
 
 Le DevOps offre un framework conçu pour dynamiser et améliorer le développement d'applications et accélérer la mise à disposition de nouvelles fonctionnalités, de mises à jour logicielles ou de produits.
 
@@ -22,9 +22,9 @@ Cette relation plus étroite entre Dev et Ops se reflète dans chaque phase du c
 
 Les objectifs du DevOps s'articulent autour de quatre catégories : culture, automatisation, mesure et partage. Dans chacun de ces domaines, les outils DevOps améliorent la rationalisation et la collaboration des workflows de développement et d'opérations en automatisant les tâches chronophages, manuelles ou statiques des phases d'intégration, de développement, de test, de déploiement ou de surveillance.
 
-## Notre Pratiques du DevOps
+## B- Notre Pratique du DevOps
 
-Notre pratiques DevOps nous permet d'amélioré en continu en automatisent les processus sur plusieurs phases du cycle de développement :
+Notre pratique DevOps nous permet d'améliorer en continu en automatisant les processus sur plusieurs phases du cycle de développement :
 
 * Développement continu. Cette pratique couvre les phases de planification et de codage dans le cycle de vie DevOps et peut inclure des mécanismes de contrôle des versions.
 
@@ -36,8 +36,7 @@ Notre pratiques DevOps nous permet d'amélioré en continu en automatisent les p
 
 * Déploiement continu. À l'instar de la livraison continue, cette pratique automatise la publication d'un code nouveau ou modifié dans l'environnement de production. Les entreprises peuvent être amenées à publier plusieurs fois par jour des modifications du code ou des fonctionnalités. Dans un contexte de déploiement continu, les technologies de conteneur comme Docker et Kubernetes assurent la cohérence du code entre plusieurs plateformes et environnements.
 
-
-## Nos outils DevOps
+## C- Nos outils DevOps
 
 * Nous allons gérer le code source à l'aide de l'outil du système de contrôle de version Git.
 * Automatisez le processus de création de code à l'aide d'outil CI Jenkins.
@@ -45,7 +44,7 @@ Notre pratiques DevOps nous permet d'amélioré en continu en automatisent les p
 * Créez une image et la déployez avec une technologie conteneurisée Docker.
 * Faires évoluer l'application à l'aide de l'outil d'orchestration de conteneurs Kubernetes.
 
-## Infrastructure en tant que code 
+## D- Infrastructure en tant que code 
 
 il s'agit du processus de gestion de l'infrastructure dans un ou plusieurs fichiers plutôt que de configurer manuellement les ressources dans une interface utilisateur. Une ressource dans cette instance est toute pièce d'infrastructure dans un environnement donné, telle qu'une machine virtuelle, un groupe de sécurité, une interface réseau, etc.
 
@@ -53,6 +52,7 @@ il s'agit du processus de gestion de l'infrastructure dans un ou plusieurs fichi
 
 Dans cette piste, nous couvrirons les fonctions de Terraform pour créer une infrastructure sur AWS.
 
+<br>
 
 # II- Préparation du projet
 
@@ -1668,4 +1668,4 @@ Quelques ligne de commandes du Jenkinsfile sont redondantes avec les roles Ansib
 ## B- Monitoring
 <br>
 
-La mise en place d'un outil de monitoring de la production serait un plus pour le maintient de l'application mais aussi pour surveiller et améliorer les performance de déploiement ce qsui s'inscrit dans la philosophie DEVOPS.
+La mise en place d'un outil de monitoring de la production serait un plus pour le maintient de l'application mais aussi pour surveiller et améliorer les performance de déploiement ce qsui s'inscrit dans la philosophie DevOps.

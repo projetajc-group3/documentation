@@ -1431,8 +1431,7 @@ Playbook qui lance le "kubernetes_role"
 
 * Création de credentials pour se connecter en ssh à l'environnement de production
 
-
-!!!!!!!!!!!IMAGES!!!!!!!!!!!!!!!
+![credential3](images/Jenkins/credential3.png)
 
 * Ajout du stage au Jenkinsfile
 

@@ -1013,8 +1013,9 @@ key_name = "key-projetgrp3"
 instance_type = "t2.large"
 vol_size = 20
 ```
-<br><br>
-&nbsp;&nbsp;&nbsp; 5- Création du fichier credential pour AWS
+<br>
+
+### 5- Création du fichier credential pour AWS
 <br>
 Nous créons sur le serveur un fichier qui contient les credentials pour se connecter à AWS au niveau /var/lib/jenkins/workspace/ (path renseigné sur le repository Terraform au niveau provider)<br>
 Le fichier contient les informations suivantes:
@@ -1482,25 +1483,31 @@ tage ('Deploy application (PRODUCTION)') {
     }
 ```
 
-## IV- Run du Pipeline Jenkins ##
+# IV- Run du Pipeline Jenkins
 
 Tout est enfin prêt pour le test final du lancement du Pipeline Jenkins. 
 Plusieurs points sont à vérifier.
 
-### A- Test ###
+## A- Test 
 
-#### Rapport Snyk ####
+### 1- Rapport Snyk 
+<br>
 
 En lançant le pipeline sur Jenkins, nous remarquons que le stage "Scan code (TEST)" que nous venons d'ajouter est en échec.
 ![failed_build_snyk](images/Snyk/failed_build_snyk.JPG)
 
+<br>
+
 Nous allons donc voir le détail du build. Sur la gauche, le menu "Snyk Security Report" est présent. En cliquant dessus nous avons le rapport suivant :
-![snyk_report1](images/Snyk/snyk_report1.JPG)
-![snyk_report2](images/Snyk/snyk_report2.JPG)
-![snyk_report3](images/Snyk/snyk_report3.JPG)
+![snyk_report1](images/Snyk/snyk_report1.JPG)<br>
+![snyk_report2](images/Snyk/snyk_report2.JPG)<br>
+![snyk_report3](images/Snyk/snyk_report3.JPG)<br>
 
 Il est clair que l'échec est dû à une vulnérabilité qui peut être corrigée simplement en utilisant une version plus à jour de la dépendance `ejs`.
+<br>
 
+### 2- Correction du Scan 
+<br>
 Pour ça on met à jour le fichier `package.json`
 ![package_json](images/Snyk/package_json_after.JPG)
 
@@ -1516,27 +1523,40 @@ Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipel
 
 > Note: Nous nous sommes permis de corriger cette erreur pour des raisons de démonstrations du module Snyk. En production réelle la bonne méthode serait plutôt de prévenir l'équipe de développement du problème.
 
-### B- Stagging ###
+## B- Stagging
 
 Arrivé en `Staging`, nous vérifions que notre machine ec2 a bien été créé :
 ![aws_preprod](images/run_pipeline/aws_preprod.JPG)
 
+<br>
+
 Rappelons que le port que nous avons variabilisé dans ce pipeline à une valeur affecté de 30001 lors de ce test. Donc en visitant http://107.21.172.98:30001 nous devrions voir notre application. Et effectivement :
 ![test_site_preprod](images/run_pipeline/test_site_preprod.JPG)
 
-### C- Production ###
+<br>
+
+## C- Production
 
 Passons à la production. Ici nous devons d'abord approuver le déploiement :
 ![approve_deploy](images/run_pipeline/approve_deploy.JPG)
 
+<br>
+
 Verifions ensuite si notre machine a été créée :
 ![aws_prod](images/run_pipeline/aws_prod.JPG)
+
+<br>
 
 Enfin de la même manière qu'en Staging, le port variabilisé à été affecté avec la valeur 30000 pour ce test. L'application devrait être déployé sur http://44.202.23.129:30000 ce qui est bien le cas :
 ![test_site_prod](images/run_pipeline/test_site_prod.JPG)
 
-### D- Eléments supplémentaires ###
-#### Github Webhook ####
+<br>
+
+## D- Eléments supplémentaires
+<br>
+
+### 1- Github Webhook
+<br>
 
 Nous souhaitons que le pipeline CICD se lance automatiquement après chaque commit sur le projet `projetajc-node` sur notre serveur de gestion de version Github. Pour ce faire, nous configurons un webhook comme trigger pour déclencher notre pipeline CICD.
 
@@ -1545,9 +1565,13 @@ Pour se faire on installe le plugin "Github Integration" sur Jenkins :
 - Administrer Jenkins -> Gestion des plugins -> Disponibles -> Recherche de "Github Integration" -> Install without restart
 ![add_plugin](images/webhook/add_plugin.JPG)
 
+<br>
+
 Ensuite, dans la configuration de notre projet sur Jenkins nous cochons la case "GitHub hook trigger for GITScm polling".
 
 ![github_trigger_jenkins](images/webhook/github_trigger_jenkins.JPG)
+
+<br>
 
 Enfin, on prend le soin de relier Github à notre serveur Jenkins. Pour ce faire, sur Github:
 
@@ -1558,7 +1582,11 @@ Enfin, on prend le soin de relier Github à notre serveur Jenkins. Pour ce faire
 
 ![webhook_github](images/webhook/webhook_github.JPG)
 
-#### Github Build Status ####
+<br>
+
+### 2- Github Build Status 
+
+<br>
 
 Pour avoir le badge `build passing` sur le README de notre projet sur le repo Github, nous installons le plugin "Embeddable Build Status"
 
@@ -1566,16 +1594,24 @@ Pour avoir le badge `build passing` sur le README de notre projet sur le repo Gi
 
 ![add_plugin](images/build_status/add_plugin.JPG)
 
+<br>
+
 Nous prenons le soin de copier le "links/markdown/unprotected"
 
 - Sur Jenkins -> Embeddable Build Status -> links/markdown/unprotected
 ![link_markdown](images/build_status/link_markdown.JPG)
 
+<br>
+
 Nous collons ce lien à la fin de notre fichier `README.md` de projet `projetajc-node` sur Github.
 ![link_on_readme](images/build_status/link_on_readme.JPG)
 ![status_passing](images/build_status/status_passing.JPG)
 
-#### Notifications Slack ####
+<br>
+
+### 3- Notifications Slack
+
+<br>
 
 Nous voulons aussi que notre pipeline puisse communiquer avec Slack sur le succès ou l'échec du pipeline. Ainsi que les adresses IP utilisées sur les machines de staging et production. Pour l'occasion nous créons un compte Slack.
 
@@ -1583,17 +1619,23 @@ Création d'un compte slack:
 
 ![creation_compte_slack](images/slack/creation_compte_slack.JPG)
 
+<br>
+
 Après avoir créé un canal privé sur lequel Jenkins communiquera nous procédons à l'association en ajoutant l'application Jenkins dans Slack.
 
 ![ajout_appli_jenkins1](images/slack/ajout_appli_jenkins1.JPG)
 
 ![ajout_appli_jenkins2](images/slack/ajout_appli_jenkins2.JPG)
 
+<br>
+
 Nous récupérerons les informations (le workspace et le secret) :
 
 ![workspace_secret1](images/slack/workspace_secret1.JPG)
 
 ![workspace_secret2](images/slack/workspace_secret2.JPG)
+
+<br>
 
 De retour sur Jenkins nous lançons l'installation du plugin Slack et sa configuration
 
@@ -1605,6 +1647,8 @@ De retour sur Jenkins nous lançons l'installation du plugin Slack et sa configu
 
 ![credential_slack](images/slack/credential_slack.JPG)
 
+<br>
+
 Pour que notre pipeline envoie une information à Slack il suffit de faire appel à la commande `slackSend` de cette manière :
 
 ```Groovy
@@ -1614,9 +1658,13 @@ slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.B
 Le résultat sur Slack est comme suit :
 ![test](images/slack/test.JPG)
 
-## V- Conclusion
+<br>
 
-## VI- Axe d'amélioration ##
+# V- Conclusion
+
+<br>
+
+# VI- Axe d'amélioration ##
 
 Plusieurs points de notre projet peuvent être améliorés:
 

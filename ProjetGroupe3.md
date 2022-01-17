@@ -1319,7 +1319,7 @@ Nous avons créé un template de fichier qui contient un manifest détaillant le
 
 • Créez un service de type "nodeport" pour exposer notre deployement précédemment crées
 
-* Nodeport
+• Nodeport
 
 Un service NodePort est le moyen le plus simple d’aiguiller du trafic externe directement vers un Pod. NodePort, comme son nom l’indique, ouvre un port spécifique sur tous les Nœuds (les VMs), et tout trafic envoyé vers ce port est transféré vers le service.
 

@@ -1225,13 +1225,43 @@ Voici le stage que nous rajoutons au Jenkinsfile:
 }
 ```
 
+### G- Déploiement en Production
+<br>
+&nbsp;&nbsp;&nbsp; 1- Création d'un role Ansible "kubernetes_role"
+<br>
+Ce rôle "kubernetes_role" ......., nous créons donc un repository kubernetes_role (https://github.com/projetajc-group3/kubernetes_role.git)<br>
+Voici son arborescence:
 
+```sh
+.
+├── README.md
+├── defaults
+│   └── main.yml
+├── galaxy.yml
+├── meta
+│   └── main.yml
+├── tasks
+│   └── main.yml
+├── templates
+│   └── nodeapp.yml.j2
+└── tests
+    ├── inventory
+    └── test.yml
+```
 
+<br>
+&nbsp;&nbsp;&nbsp; 2- Création d'un deploiement pour "kubernetes_role"
+<br>
+Nous créons un répository "kubernetes_role_deploy" afin de deployer rapidement le role Kubernetes (https://github.com/projetajc-group3/kubernetes_role_deploy.git)<br>
+Voici son arborescence:
 
-
-
-
-
+```sh
+.
+├── hosts.yml
+├── kubernetes.yml
+└── roles
+    └── requirements.yml
+```
 
 
 

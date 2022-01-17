@@ -218,7 +218,7 @@ Pour cet agent nous voulons utiliser une machine AWS qui servira seulement d'hô
 * SSD 20 Go
 * Sécurity Group : 22 / 80 /  8080
 
-Nous y installons seulement Docker dessus.
+Nous y installons seulement Java et Docker dessus.
 
 Dans un deuxième temps, sur jenkins, nous ajoutons la clé privée qui permet au serveur Jenkins de se connecter en ssh à l'instance créée précédemment (futur agent Jenkins).
 

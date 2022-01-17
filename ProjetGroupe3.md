@@ -955,3 +955,83 @@ kubectl create -f deploy.yaml
 
 
 ansible-playbook -i kubernetes_role_deploy/hosts.yml kubernetes_role_deploy/kubernetes.yml --extra-vars "name_containers=webappprod image_containers=projetajcgroup3/node:1.0" || true
+
+# Automatisation et posts actions #
+
+## Github Webhook ##
+
+Nous souhaitons que le pipeline CICD se lance automatiquement après chaque commit sur le projet `projetajc-node` sur notre serveur de gestion de version Github. Pour ce faire, nous configurons un webhook comme trigger pour déclencher notre pipeline CICD.
+
+Pour se faire on installe le plugin "Github Integration" sur Jenkins :
+
+- Administrer Jenkins -> Gestion des plugins -> Disponibles -> Recherche de "Github Integration" -> Install without restart
+![add_plugin](images/webhook/add_plugin.JPG)
+
+Ensuite, dans la configuration de notre projet sur Jenkins nous cochons la case "GitHub hook trigger for GITScm polling".
+
+![github_trigger_jenkins](images/webhook/github_trigger_jenkins.JPG)
+
+Enfin, on prend le soin de relier Github à notre serveur Jenkins. Pour ce faire, sur Github:
+
+- `projetajc-node` -> setting -> add webhook
+![add_webhook](images/webhook/add_webhook.JPG)
+
+- on saisi dans "Payload URL" l'URL pour accéder à notre serveur Jenkins suivi par un github-webhook. Nous testons la connexion et nous pouvons constater que le lien a été bien mis en place.
+
+![webhook_github](images/webhook/webhook_github.JPG)
+
+## Github Build Status ##
+
+Pour avoir le badge `build passing` sur le README de notre projet sur le repo Github, nous installons le plugin "Embeddable Build Status"
+
+- Administrer Jenkins -> Gestion des plugins -> Disponibles -> Recherche de "Embeddable Build Status" -> Install without restart
+
+![add_plugin](images/build_status/add_plugin.JPG)
+
+Nous prenons le soin de copier le "links/markdown/unprotected"
+
+- Sur Jenkins -> Embeddable Build Status -> links/markdown/unprotected
+![link_markdown](images/build_status/link_markdown.JPG)
+
+Nous collons ce lien à la fin de notre fichier `README.md` de projet `projetajc-node` sur Github.
+![link_on_readme](images/build_status/link_on_readme.JPG)
+![status_passing](images/build_status/status_passing.JPG)
+
+## Notifications Slack ##
+
+Nous voulons aussi que notre pipeline puisse communiquer avec Slack sur le succès ou l'échec du pipeline. Ainsi que les adresses IP utilisées sur les machines de staging et production. Pour l'occasion nous créons un compte Slack.
+
+Création d'un compte slack:
+
+![creation_compte_slack](images/slack/creation_compte_slack.JPG)
+
+Après avoir créé un canal privé sur lequel Jenkins communiquera nous procédons à l'association en ajoutant l'application Jenkins dans Slack.
+
+![ajout_appli_jenkins1](images/slack/ajout_appli_jenkins1.JPG)
+
+![ajout_appli_jenkins2](images/slack/ajout_appli_jenkins2.JPG)
+
+Nous récupérerons les informations (le workspace et le secret) :
+
+![workspace_secret1](images/slack/workspace_secret1.JPG)
+
+![workspace_secret2](images/slack/workspace_secret2.JPG)
+
+De retour sur Jenkins nous lançons l'installation du plugin Slack et sa configuration
+
+- Administrer Jenkins -> Gestion des plugins -> Disponibles -> Recherche de "slack" -> Install without restart
+
+![add_plugin](images/slack/add_plugin.JPG)
+
+- Sur Jenkins -> configurer le système -> Slack -> Créer le Credential `slack_token` de type "secret text" qui permettra à Jenkins d'écrire dans le canal créé sur slack et donc nous envoyer des notifications concernant l'évolution de notre pipeline.
+
+![credential_slack](images/slack/credential_slack.JPG)
+
+Pour que notre pipeline envoie une information à Slack il suffit de faire appel à la commande `slackSend` de cette manière :
+
+```Groovy
+slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+```
+
+Le résultat sur Slack est comme suit :
+![test](images/slack/test.JPG)

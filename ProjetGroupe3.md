@@ -305,9 +305,43 @@ CMD [ "node", "./bin/www" ]
 
 # Build de l'image #
 
-Maintenant que nous avons créé notre Dockerfile, construisons notre image. Pour ce faire, nous utilisons la commande docker build. La commande docker build crée des images Docker à partir d'un Dockerfile. 
+Maintenant que nous avons créé notre Dockerfile, construisons notre image. Pour ce faire, nous utilisons la commande docker build. La commande docker build crée des images Docker à partir d'un Dockerfile. Ce build s'execute sur l'Agent-test. Nous prenons quand même soin de supprimer les conteneurs et images qui aurait pu resté depuis le dernier build. Puis nous faison un git clone du projet et un docker build.
+
+```Groovy 
+stage ('Image Build (TEST)') {
+            agent {label 'Agent-test'}
+            steps{
+                script{ 
+                    sh'''
+                    rm -rf projetajc_node/ || true
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+                    docker rmi $USERNAME/$IMAGE_NAME:$IMAGE_TAG || true
+                    git clone $URL_GIT_NODE || true
+                    cd  projetajc_node
+                    docker build -t $USERNAME/$IMAGE_NAME:$IMAGE_TAG .                            
+                    '''
+                }
+            }
+        }
+```
 
 # Run # 
+
+Nous faisons ensuite un run dans un stage différent pour une meilleure visibilité en cas d'erreurs.
+
+```Groovy 
+stage ('Run build (TEST)') {
+            agent {label 'Agent-test'}
+            steps{
+                script{ 
+                    sh'''
+                    docker run -d -p $TEST_EXTERNAL_PORT:$CONTAINER_PORT --name $CONTAINER_NAME $USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
+```
 
 # Scan de sécurité et de vulnérabilité de l'application #
 

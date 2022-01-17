@@ -1249,6 +1249,106 @@ Voici son arborescence:
     └── test.yml
 ```
 
+* tasks/main.yml
+
+Ce manifest s'assure de l'installation de kubernetes et lance son service.
+
+```sh
+---
+# tasks file for install kubernetes
+- name: install tools 
+  shell: |
+    sudo apt-get -y update
+    sudo apt install -y qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils virt-manager
+    sudo apt-get install -y socat
+    sudo apt-get install -y conntrack
+    sudo apt-get -y install wget
+- name: "Kubernetes bin"
+  shell: |
+    sudo wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo chmod +x minikube-linux-amd64
+    sudo mv minikube-linux-amd64 /usr/bin/minikube
+- name: "Kubernetes ctl"
+  shell: |
+    sudo curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    sudo chmod +x kubectl
+    sudo mv kubectl  /usr/bin/
+    sudo echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+    sudo systemctl enable docker.service
+- name: "Kubernetes stop"
+  shell: |
+    minikube stop
+    sudo sysctl fs.protected_regular=0
+- name: "Kubernetes launch"
+  command: "minikube start --driver=none"
+
+- name: "Create Manifests Kubernetes template" 
+  template:
+    src: "nodeapp.yml.j2"
+    dest: "/home/ubuntu/nodeapp.yml"
+  
+- name: "Deploy Manifests Kubernetes"
+  command: "kubectl apply -f nodeapp.yml"
+  args:
+    chdir: "/home/ubuntu/"
+```
+
+* meta/main.yml
+
+```sh
+---
+galaxy_info:
+  role_name: kubernetes_role
+  author: Group3
+  description: Ansible kubernetes role
+  company: UmanisAjc
+```
+
+* templates/nodeapp.yml.j2
+
+Nous avons créé un template de fichier qui contient un manifest détaillant le deploiement de notre application Node, il sera déployé sur l'instance de production à l’aide du module template, qui prend en charge le transfert d’un fichier local du nœud de contrôle vers l'hôte géré. Le template contient les instructions de base qui seront ensuite recopié. Il contient également des variables qui seront remplacées individuellement sur la machine cible.
+
+```sh
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport
+spec:
+  type: NodePort
+  selector:
+    app: nodeapp
+  ports:
+  #port du pod a utiliser
+    - targetPort: {{ containers_port }}
+      #port du service
+      port: {{ containers_port }}
+      #port utilisable depuis l'extrieur du cluster
+      nodePort: {{ external_port }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp
+  labels:
+    app: nodeapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodeapp
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+        - name: {{ name_containers }}
+          image: {{ image_containers }}
+          ports:
+            - containerPort: {{ containers_port }}
+```
+
 <br>
 &nbsp;&nbsp;&nbsp; 2- Création d'un deploiement pour "kubernetes_role"
 <br>
@@ -1263,6 +1363,85 @@ Voici son arborescence:
     └── requirements.yml
 ```
 
+* roles/requirements.yml
+
+Ce manifest permet de récupérer et d'installer le "kubernetes_role":
+
+```sh
+- src: https://github.com/projetajc-group3/kubernetes_role.git
+```
+
+* host.yml
+
+Fichier d'inventaire pour lancer le role sur l'hote:
+
+```sh
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+```
+
+* kubernetes.yml
+
+Playbook qui lance le "kubernetes_role"
+
+```sh
+- name: deploy kubernetes using a role
+  hosts: localhost
+  become: true
+  roles:
+    - kubernetes_role
+```
+
+3- Déploiement de l'application en production
+Création de credentials pour se connecter en ssh à l'environnement de production
+!!!!!!!!!!!IMAGES!!!!!!!!!!!!!!!
+
+Ajout du stage au Jenkinsfile
+
+Nous connectons donc en ssh à l'ec2 à l'aides des credentials prédemment créés ainsi qu'avec l'ip public que nous avions stockés dans une variable d'environnement global à Jenkins.
+La première étape consiste à installer Ansible sur la machine afin de pouvoir utiliser notre "docker_role", et cela de la meme maniere que dans l'étape "Déploiement de l'application en preproduction dans le chapiter F"
+
+La seconde étape consiste à installer Ansible sur la machine afin de pouvoir utiliser notre "kubernetes_role"
+Nous récuperons donc notre repository de deploiement du "kubernetes_role" afin de l'executer sur l'hote
+Une fois Kubernetes installé nous vérifions qu'une ancienne version de notre image n'est pas présente et qu'une ancienne version de notre deploiement n'est pas en cours non plus. Enfin nous lançons la nouvelle version à partir de notre nouvelle image de DockerHub
+Voici le stage que nous rajoutons au Jenkinsfile:
+
+```sh
+tage ('Deploy application (PRODUCTION)') {
+            agent any 
+            when{
+                expression{GIT_BRANCH == 'origin/master'}
+            }
+            steps{
+                withCredentials([sshUserPrivateKey(credentialsId: "ec2_test_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        script{ 
+                            sh'''
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} sudo apt-get update -y
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} sudo apt-get -y install python3-pip
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} sudo pip3 install ansible
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} git clone $URL_GIT_DEPLOY_DOCKER
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} ansible-galaxy install -r docker_role_deploy/roles/requirements.yml
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} ansible-playbook -i docker_role_deploy/hosts.yml docker_role_deploy/docker.yml
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} sudo rm -rf docker_role_deploy || true
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker kill $(docker ps -aq) || true
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker rm $(docker ps -aq) -f || true
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker rmi $USERNAME/$IMAGE_NAME:$IMAGE_TAG -f || true
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} sudo rm -rf kubernetes_role_deploy || true
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} git clone $URL_GIT_DEPLOY_KUBERNETES
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} ansible-galaxy install --force -r kubernetes_role_deploy/roles/requirements.yml
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} ansible-playbook -i kubernetes_role_deploy/hosts.yml kubernetes_role_deploy/kubernetes.yml --extra-vars \\"name_containers=$CONTAINER_NAME image_containers=$USERNAME/$IMAGE_NAME:$IMAGE_TAG containers_port=$CONTAINER_PORT external_port=$PROD_EXTERNAL_PORT\\"
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} sudo rm -rf kubernetes_role_deploy || true
+                            '''
+                        }
+                    }
+                }
+            } 
+        }
+    }
+```
 
 
 

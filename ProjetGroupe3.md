@@ -1508,7 +1508,7 @@ Une fois modifié avec la valeur recommandée par Snyk, nous relançons le pipel
 Arrivé en `Staging`, nous vérifions que notre machine ec2 a bien été créé :
 ![aws_preprod](images/run_pipeline/aws_preprod.JPG)
 
-Rappeleons que le port que nous avons variabilisé dans ce pipeline à une valeur affecté de 30000 lors de ce test. Donc en visitant http://107.21.172.98:30001 nous devrions voir notre application. Et effectivement :
+Rappelons que le port que nous avons variabilisé dans ce pipeline à une valeur affecté de 30001 lors de ce test. Donc en visitant http://107.21.172.98:30001 nous devrions voir notre application. Et effectivement :
 ![test_site_preprod](images/run_pipeline/test_site_preprod.JPG)
 
 ### C- Production ###

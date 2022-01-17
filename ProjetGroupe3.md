@@ -220,6 +220,12 @@ Pour cet agent nous voulons utiliser une machine AWS qui servira seulement d'hô
 
 Nous y installons seulement Docker dessus.
 
+Dans un deuxième temps, sur jenkins, nous ajoutons la clé privée qui permet au serveur Jenkins de se connecter en ssh à l'instance créée précédemment (futur agent Jenkins).
+
+Administrer Jenkins -> Manage Credentials -> Global -> Ajouter des credentials -> Type "SSH Username with private key" et on colle dans "Private Key" la clé privée.
+
+![key-projetgrp3](images/Agent_jenkins/key-projetgrp3.JPG)
+
 ## Création de l'Agent-test ##
 
 Commençons par créer cet `Agent-test` sur l'interface de Jenkins :

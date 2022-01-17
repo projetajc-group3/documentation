@@ -284,7 +284,7 @@ pipeline {
 
 ### A- Build de l'image
 
-&nbsp;&nbsp;&nbsp; 1- Installation de Docker sur les serveurs Jenkins 
+&nbsp;&nbsp;&nbsp; 1- Installation de Docker sur le serveur Jenkins 
 
 Voici les commmandes a exécuter:
 ```sh

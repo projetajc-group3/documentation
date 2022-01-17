@@ -60,9 +60,9 @@ il s'agit du processus de gestion de l'infrastructure dans un ou plusieurs fichi
 Dans cette piste, nous couvrirons les fonctions de Terraform pour créer une infrastructure sur AWS.
 
 
-## II- Préparation du projet
+# II- Préparation du projet
 
-### A- Prérequis 
+## A- Prérequis 
 
 * Compte GitHub (projetajc-group3)
 * Compte DockerHub (projetajcgroup3)
@@ -70,7 +70,7 @@ Dans cette piste, nous couvrirons les fonctions de Terraform pour créer une inf
 * Compte utilisateur AWS
 
 
-### B- Création des serveurs pour Jenkins sur AWS 
+## B- Création des serveurs pour Jenkins sur AWS 
 
 Dans ce projet, nous allons créer 2 instances AWS pour Jenkins:
 
@@ -78,7 +78,7 @@ Dans ce projet, nous allons créer 2 instances AWS pour Jenkins:
 * Jenkins agent: agent dédié au buid/scan/test du projet
 
 
-&nbsp;&nbsp;&nbsp; 1- Création d'une instance ec2 pour Jenkins master
+### 1- Création d'une instance ec2 pour Jenkins master
 
 * t2.large
 * SSD 20 Go
@@ -99,7 +99,7 @@ Résultat:
 * ID de mon instance ec2 : ` i-04ce15266a590e510`
 * IPv4 publique de mon instance ec2 : `54.174.144.82`
 
-&nbsp;&nbsp;&nbsp; 2- Création d'une instance ec2 pour Jenkins agent
+### 2- Création d'une instance ec2 pour Jenkins agent
 
 De la même manière nous créons une instance ec2 avec les caractéristiques suivantes:
 * t2.large
@@ -113,9 +113,9 @@ Résultat:
 * IPv4 publique de mon instance ec2 : `54.147.236.68`
 
 
-### C- Installation de Jenkins 
+## C- Installation de Jenkins 
 
-&nbsp;&nbsp;&nbsp; 1- Commande de l'installation de java
+### 1- Commande de l'installation de java
 
 ```sh
 sudo apt-get -y update
@@ -131,7 +131,7 @@ OpenJDK Runtime Environment (build 11.0.13+8-Ubuntu-0ubuntu1.20.04)
 OpenJDK 64-Bit Server VM (build 11.0.13+8-Ubuntu-0ubuntu1.20.04, mixed mode)
 ```
 
-&nbsp;&nbsp;&nbsp; 2- Commande de l'installation de jenkins
+### 2- Commande de l'installation de jenkins
 
 ```sh
 wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
@@ -142,7 +142,7 @@ sudo systemctl start jenkins
 sudo systemctl status jenkins
 ```
 
-### D- Premier démarrage de Jenkins
+## D- Premier démarrage de Jenkins
 
 On se connecte sur le serveur Jenkins: http://54.174.144.82:8080/
 
@@ -169,12 +169,12 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ![Screenshot](images/Jenkins/6.png)
 ![Screenshot](images/Jenkins/7.png)
 
-### E- Paramétrage de l'agent Jenkins
+## E- Paramétrage de l'agent Jenkins
 
 Ce nouvel agent s'occupera exclusivement de tout la partie consistant à construire l'image docker, la lancer, la scanner, la tester et la pousser sur DockerHub. 
 Une fois ces tâches effectuées l'agent effacera toutes les données qui lui ont été passées pour être de nouveau fraîchement disponible pour un futur build.
 
-&nbsp;&nbsp;&nbsp; 1- Commande de l'installation de java
+### 1- Commande de l'installation de java
 
 ```sh
 sudo apt-get -y update
@@ -190,7 +190,7 @@ OpenJDK Runtime Environment (build 11.0.13+8-Ubuntu-0ubuntu1.20.04)
 OpenJDK 64-Bit Server VM (build 11.0.13+8-Ubuntu-0ubuntu1.20.04, mixed mode)
 ```
 
-&nbsp;&nbsp;&nbsp; 2- Ajout credential dans Jenkins
+### 2- Ajout credential dans Jenkins
 
 Sur jenkins, nous ajoutons la clé privée qui permet au serveur Jenkins de se connecter en ssh à l'instance créée pour l'agent Jenkins.
 
@@ -201,7 +201,7 @@ Administrer Jenkins **->** Manage Credentials **->** Global
 * Résulat:
 ![key-projetgrp3](images/Agent_jenkins/key-projetgrp3.JPG)
 
-&nbsp;&nbsp;&nbsp; 3- Paramétrage de l'agent dans Jenkins
+### 3- Paramétrage de l'agent dans Jenkins
 
 Commençons par créer `Agent-test` sur l'interface de Jenkins :
 
@@ -213,7 +213,7 @@ On se connecte sur celui-ci en SSH en lui précisant l'hôte et les credentials.
 ![creation_noeud1](images/Agent_jenkins/creation_noeud1.JPG)
 ![creation_noeud2](images/Agent_jenkins/creation_noeud2.JPG)
 <br>
-&nbsp;&nbsp;&nbsp; 4- Utilisation de l'agent dans le pipeline
+### 4- Utilisation de l'agent dans le pipeline
 
 Il faudra maintenant faire appel à cet agent dans le pipeline là où on le souhaite de la manière suivante:
 
@@ -227,7 +227,7 @@ stage ('<Nom du stage>') {
 ```
 <br>
 
-### F- Création du Backend
+## F- Création du Backend
 
 C'est une bonne pratique de traiter notre fichier d'état comme un secret et de le stocker à distance. 
 
@@ -242,15 +242,15 @@ Nous voulons nous assurer que notre option backend verrouille notre état lorsqu
 ![Screenshot](images/aws/n.png)
 ![Screenshot](images/aws/o.png)
 
-### G- Création du Pipeline
+## G- Création du Pipeline
 
-&nbsp;&nbsp;&nbsp; 1- Création du pipeline dans Jenkins
+### 1- Création du pipeline dans Jenkins
 
 ![creation_pipeline](images/Jenkins/creation_pipeline.JPG)
 ![pipeline_general](images/Jenkins/pipeline_general.JPG)
 ![pipeline_config](images/Jenkins/pipeline_config.JPG)
 
-&nbsp;&nbsp;&nbsp; 2- Création du Jenkinsfile
+### 2- Création du Jenkinsfile
 
 ```groovy
 def EC2_PRODUCTION_HOST = "@IP" 
@@ -280,11 +280,11 @@ pipeline {
 ```
 <br>
 
-## III- Implémentation du Pipeline Jenkins
+# III- Implémentation du Pipeline Jenkins
 
-### A- Build de l'image
+## A- Build de l'image
 
-&nbsp;&nbsp;&nbsp; 1- Installation de Docker sur le serveur Jenkins 
+### 1- Installation de Docker sur le serveur Jenkins 
 
 Voici les commmandes a exécuter:
 ```sh
@@ -295,7 +295,7 @@ sudo usermod -aG docker ubuntu
 sudo usermod -aG docker jenkins
 ```
 
-&nbsp;&nbsp;&nbsp; 2- Création du Dockerfile
+### 2- Création du Dockerfile
 
 * Nous créons un repository projetajc_node sur lequel nous stockons l'application à déployer (fork):<br>
 https://github.com/projetajc-group3/projetajc_node.git
@@ -313,7 +313,7 @@ EXPOSE 3000
 CMD [ "node", "./bin/www" ]
 ```
 
-&nbsp;&nbsp;&nbsp; 3- Build de l'image
+### 3- Build de l'image
 
 Maintenant que nous avons créé notre Dockerfile, construisons notre image. Pour ce faire, nous utilisons la commande docker build qui crée des images Docker à partir d'un Dockerfile. Ce build s'execute sur l'Agent-test. Nous prenons quand même soin de supprimer les conteneurs et images qui auraient pu rester depuis le dernier build avant de lancer le build.
 <br>
@@ -339,9 +339,9 @@ stage ('Image Build (TEST)') {
 ```
 <br>
 
-### B- Test de l'application
+## B- Test de l'application
 
-&nbsp;&nbsp;&nbsp; 1- Run de l'image
+### 1- Run de l'image
 <br>
 Nous lançons ensuite le conteneur à l'aide des commandes docker afin de pourvoir tester notre image fraîchement créée.
 <br>
@@ -360,7 +360,8 @@ stage ('Run build (TEST)') {
         }
 ```
 <br>
-&nbsp;&nbsp;&nbsp; 2- Test de l'image
+
+### 2- Test de l'image
 <br>
 Nous avons conteneurisé notre application, nous avons construit l'image, et nous l'avons lancé. L'étape suivante est simplement de tester si l'application est bien déployée sur l'Agent-test.
 
@@ -386,14 +387,15 @@ Si le curl réussi alors c'est que le site internet a bien été déployé.
 >Note: nous faisons ici deux **tac** en commandes pour laisser le temps au curl de se finir.
 <br>
 
-### C- Scan du code
+## C- Scan du code
 
-&nbsp;&nbsp;&nbsp; 1- Scan de sécurité et de vulnérabilité de l'application
+### 1- Scan de sécurité et de vulnérabilité de l'application
 <br>
 Avant de pousser notre application en pré-prod, nous lançons un scan du code applicatif à la recherche d'éventuelles vulnérabilités. Cela dans le but de renforcer la sécurité.
 Pour ça, nous utilisons <strong>Snyk</strong>, qui à l'énorme avantage d'avoir un module sur Jenkins pour une meilleure intégration de l'outil directement au pipeline. 
-<br><br>
-&nbsp;&nbsp;&nbsp; 2- Installation de Snyk
+<br>
+
+### 2- Installation de Snyk
 <br>
 Pour l'installation rien de plus simple. Snyk possède un module directement sur Jenkins avec toute la documentation à suivre : https://plugins.jenkins.io/snyk-security-scanner/.
 
@@ -420,8 +422,9 @@ On copie ici notre clé et on lui donne un nom : **snyk-token**
 ![sny_token](images/Snyk/sny_token.JPG)
 <br>
 L'installation et la configuration sont terminées. 
-<br><br>
-&nbsp;&nbsp;&nbsp; 3- Utilisation de Snyk dans le pipeline
+<br>
+
+### 3- Utilisation de Snyk dans le pipeline
 <br>
 Pour lancer un test sur le code du projet, nous avons un stage dans le pipeline, que nous lançons sur l'Agent-test. Nous devons fournir à Snyk le nom de notre installation Snyk et le nom du token Snyk.
 Nous précisons aussi le <strong>targetFile</strong> qui pointe sur le manifest du projet. Dans notre cas, c'est le fichier `package.json`.
@@ -441,10 +444,9 @@ stage('Scan code (TEST)') {
 ```
 <br>
 
-### D- Push de l'image vers DockerHub
+## D- Push de l'image vers DockerHub
 
-<br>
-&nbsp;&nbsp;&nbsp; 1- Création credential pour Dockerhub
+### 1- Création credential pour Dockerhub
 <br>
 Après le build, nous comptons sauvegarder notre artefact sur le repository Dockerhub. Nous devons alors communiquer au serveur Jenkins les credentials nécessaires pour s'y connecter et pousser l'artefact créé sur l'Agent-test.
 
@@ -459,7 +461,8 @@ Nous prenons soin de copier la clé.
 ![settings_dockerhub](images/dockerhub/settings_dockerhub.JPG)
 
 ![token_generation_dockerhub](images/dockerhub/token_generation_dockerhub.JPG)
-<br><br>
+<br>
+
 * Sur Jenkins:
 
 Administrer Jenkins **->**  Manage Credentials **->**  Global **->**  Ajouter des credentials **->**  Type "Secret text" et on colle dans "secret" le token Docker que nous avons créé sur Docker-hub.
@@ -470,8 +473,8 @@ Administrer Jenkins **->**  Manage Credentials **->**  Global **->**  Ajouter de
 
 ![credential_dockerhub](images/dockerhub/credential_dockerhub.JPG)
 <br>
-<br>
-&nbsp;&nbsp;&nbsp; 2- Docker Push
+
+### 2- Docker Push
 <br>
 
 Sur le pipeline Jenkins nous allons créér un stage qui s'occupe de pousser sur Dockerhub l'image que nous venons de construire et de nettoyer notre `Agent-test`. <br>
@@ -500,9 +503,9 @@ stage ('Clean test environment and save artifact (TEST)') {
        }
 ```
 
-### E- Création des machines Preproduction et Production avec Terraform
-<br>
-&nbsp;&nbsp;&nbsp; 1- Installation de Terraform sur Jenkin master
+## E- Création des machines Preproduction et Production avec Terraform
+
+### 1- Installation de Terraform sur Jenkin master
 <br>
 Terraform est l'offre d'infrastructure en tant que code de HashiCorp. C'est un outil pour construire, modifier et gérer l'infrastructure de manière sûre et reproductible. <br>
 
@@ -514,8 +517,9 @@ Voilà les commandes que nous exécutons sur le serveur Jenkins master:
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 ```
-<br><br>
-&nbsp;&nbsp;&nbsp; 2- Repository Terraform
+<br>
+
+### 2- Repository Terraform
 <br>
 Voici l’arborescence de notre repository terraform (https://github.com/projetajc-group3/terraform_node.git):
 
@@ -551,8 +555,9 @@ Voici l’arborescence de notre repository terraform (https://github.com/projeta
     └── variable.tf
 ```
 
-<br><br>
-&nbsp;&nbsp;&nbsp; 3- Les modules
+<br>
+
+### 3- Les modules
 <br>
 
 * sg_preprod
@@ -785,8 +790,9 @@ resource "aws_instance" "myec2" {
 
 }
 ```
-<br><br>
-&nbsp;&nbsp;&nbsp; 4- Les environnement
+<br>
+
+### 4- Les environnement
 <br>
 
 * preprod
@@ -1018,8 +1024,9 @@ Le fichier contient les informations suivantes:
 aws_access_key_id = "XXXXX"
 aws_secret_access_key = "XXXXXXXXXXXX"
 ```
-<br><br>
-&nbsp;&nbsp;&nbsp; 6- Création ec2 de Preproduction
+<br>
+
+### 6- Création ec2 de Preproduction
 <br>
 
 Nous allons donc récupérer les repository Terraform que nous avons crééer précedemment et nous placer dans le repertoire prepod qui contient l'ensemble des paramétrages pour cet environnement.<br>
@@ -1046,8 +1053,9 @@ stage ('Creation ec2 instance if necessary (STAGING)') {
     }
 }
 ```
-<br><br>
-&nbsp;&nbsp;&nbsp; 7- Création ec2 de Production
+<br>
+
+### 7- Création ec2 de Production
 <br>
 
 Nous effectuons les mêmes opération que pour la preproduction à la différence que nous nous plaçons dans le répertoire prod.<br>
@@ -1080,9 +1088,8 @@ stage ('Creation ec2 instance if necessary (PRODUCTION)') {
 ```
 <br>
 
-### F- Déploiement en Preproduction
-<br>
-&nbsp;&nbsp;&nbsp; 1- Création d'un role Ansible "docker_role"
+## F- Déploiement en Preproduction
+### 1- Création d'un role Ansible "docker_role"
 <br>
 Ce rôle "docker_role" a simplement pour but d'installer Docker sur le serveur, nous créons donc un repository docker_role (https://github.com/projetajc-group3/docker_role.git)<br>
 Voici son arborescence:
@@ -1139,8 +1146,8 @@ galaxy_info:
   company: UmanisAjc
 ```
 <br>
-<br>
-&nbsp;&nbsp;&nbsp; 2- Création d'un deploiement pour "docker_role"
+
+### 2- Création d'un deploiement pour "docker_role"
 <br>
 Nous créons un répository "docker_role_deploy" afin de deployer rapidement le role Docker (https://github.com/projetajc-group3/docker_role_deploy.git)<br>
 Voici son arborescence:
@@ -1184,8 +1191,8 @@ Playbook qui lance le "docker_role"
     - docker_role
 ```
 <br>
-<br>
-&nbsp;&nbsp;&nbsp; 3- Déploiement de l'application en preproduction
+
+### 3- Déploiement de l'application en preproduction
 <br>
 
 * Création de credentials pour se connecter en ssh à l'environnement de preproduction
@@ -1205,7 +1212,7 @@ Voici le stage que nous rajoutons au Jenkinsfile:
  stage ('Deploy application (STAGING)') {
     agent any
     steps{
-        withCredentials([sshUserPrivateKey(credentialsId: "ec2_test_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+        withCredentials([sshUserPrivateKey(credentialsId: "ec2_staging_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 script{ 
                     sh'''
@@ -1228,7 +1235,7 @@ Voici le stage que nous rajoutons au Jenkinsfile:
 }
 ```
 
-### G- Déploiement en Production
+## G- Déploiement en Production
 
 Nous allons utiliser Kubernetes pour disposer d’une plateforme de déploiement résiliente et à haute disponibilité avec une configuration et une gestion simple à l'aide de nos manifestes. 
 
@@ -1236,9 +1243,10 @@ Kubernetes nous permet d'orchester nos conteneurs sur notre environement de prod
 
 
 <br>
-&nbsp;&nbsp;&nbsp; 1- Création d'un role Ansible "kubernetes_role"
+
+### 1- Création d'un role Ansible "kubernetes_role"
 <br>
-Ce rôle "kubernetes_role" ......., nous créons donc un repository kubernetes_role (https://github.com/projetajc-group3/kubernetes_role.git)<br>
+Ce rôle "kubernetes_role" va nous permettre l'installation de Kubernetes et de deployer notre service et nos pods, nous créons donc un repository kubernetes_role (https://github.com/projetajc-group3/kubernetes_role.git)<br>
 Voici son arborescence:
 
 ```sh
@@ -1259,10 +1267,9 @@ Voici son arborescence:
 ```
 
 * tasks/main.yml
+<br>
 
 Ce manifest s'assure de l'installation de kubernetes et lance son service. Il contient les différentes instructions afin d'installer kubernetes à l'aide de différentes taches.
-
-
 ```sh
 ---
 # tasks file for install kubernetes
@@ -1304,7 +1311,7 @@ Ce manifest s'assure de l'installation de kubernetes et lance son service. Il co
 ```
 
 * meta/main.yml
-
+<br>
 ```sh
 ---
 galaxy_info:
@@ -1315,6 +1322,7 @@ galaxy_info:
 ```
 
 * templates/nodeapp.yml.j2
+<br>
 
 Nous avons créé un template de fichier qui contient un manifest détaillant le deploiement de notre application Node, il sera déployé sur l'instance de production à l’aide du module template, qui prend en charge le transfert d’un fichier local du nœud de contrôle vers l'hôte géré. Le template contient les instructions de base qui seront ensuite recopiées. Il contient également des variables qui seront remplacées individuellement sur la machine cible.
 
@@ -1377,7 +1385,8 @@ spec:
 ```
 
 <br>
-&nbsp;&nbsp;&nbsp; 2- Création d'un deploiement pour "kubernetes_role"
+
+### 2- Création d'un deploiement pour "kubernetes_role"
 <br>
 Nous créons un répository "kubernetes_role_deploy" afin de deployer rapidement le role Kubernetes (https://github.com/projetajc-group3/kubernetes_role_deploy.git)<br>
 Voici son arborescence:
@@ -1421,11 +1430,14 @@ Playbook qui lance le "kubernetes_role"
     - kubernetes_role
 ```
 
-3- Déploiement de l'application en production
-Création de credentials pour se connecter en ssh à l'environnement de production
+### 3- Déploiement de l'application en production
+
+* Création de credentials pour se connecter en ssh à l'environnement de production
+
+
 !!!!!!!!!!!IMAGES!!!!!!!!!!!!!!!
 
-Ajout du stage au Jenkinsfile
+* Ajout du stage au Jenkinsfile
 
 Nous connectons donc en ssh à l'ec2 à l'aides des credentials prédemment créés ainsi qu'avec l'ip public que nous avions stockés dans une variable d'environnement global à Jenkins.
 La première étape consiste à installer Ansible sur la machine afin de pouvoir utiliser notre "docker_role", et cela de la meme maniere que dans l'étape "Déploiement de l'application en preproduction dans le chapiter F"
@@ -1442,7 +1454,7 @@ tage ('Deploy application (PRODUCTION)') {
                 expression{GIT_BRANCH == 'origin/master'}
             }
             steps{
-                withCredentials([sshUserPrivateKey(credentialsId: "ec2_test_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                         script{ 
                             sh'''

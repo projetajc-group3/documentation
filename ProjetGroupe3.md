@@ -1600,3 +1600,13 @@ slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.B
 
 Le résultat sur Slack est comme suit :
 ![test](images/slack/test.JPG)
+
+## V- Conclusion
+
+## VI- Axe d'amélioration ##
+
+Plusieurs points de notre projet peuvent être améliorés:
+
+### Jenkinsfile ###
+
+Quelques ligne de commandes du Jenkinsfile sont redondantes avec les roles Ansible que nous avont créés. Les **stages** pourrait aussi mieux gérer les erreurs potentiel avec plus de `catchError`

@@ -305,7 +305,7 @@ CMD [ "node", "./bin/www" ]
 
 # Build de l'image #
 
-Maintenant que nous avons créé notre Dockerfile, construisons notre image. Pour ce faire, nous utilisons la commande docker build. La commande docker build crée des images Docker à partir d'un Dockerfile. Ce build s'execute sur l'Agent-test. Nous prenons quand même soin de supprimer les conteneurs et images qui aurait pu resté depuis le dernier build. Puis nous faison un git clone du projet et un docker build.
+Maintenant que nous avons créé notre Dockerfile, construisons notre image. Pour ce faire, nous utilisons la commande docker build qui crée des images Docker à partir d'un Dockerfile. Ce build s'execute sur l'Agent-test. Nous prenons quand même soin de supprimer les conteneurs et images qui auraient pu rester depuis le dernier build avant de lancer le build.
 
 ```Groovy 
 stage ('Image Build (TEST)') {

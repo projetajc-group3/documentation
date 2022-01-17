@@ -110,7 +110,7 @@ De la même manière nous créons une instance ec2 avec les caractéristiques su
 Résultat:
 * Nom de l'instance ec2 : `projetgrp3-ec2-jenkins-agent`
 * ID de mon instance ec2 : ` i-01e49b48c289b3992`
-* IPv4 publique de mon instance ec2 : `3.91.217.115`
+* IPv4 publique de mon instance ec2 : `54.147.236.68`
 
 
 ### C- Installation de Jenkins 

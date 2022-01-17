@@ -1082,7 +1082,7 @@ stage ('Creation ec2 instance if necessary (PRODUCTION)') {
 <br>
 &nbsp;&nbsp;&nbsp; 1- Création d'un role Ansible "docker_role"
 <br>
-Ce rôle "docker°role" a simplement pour but d'installer Docker sur le serveur, nous créons donc un repository docker_role (https://github.com/projetajc-group3/docker_role.git)<br>
+Ce rôle "docker_role" a simplement pour but d'installer Docker sur le serveur, nous créons donc un repository docker_role (https://github.com/projetajc-group3/docker_role.git)<br>
 Voici son arborescence:
 
 ```sh
@@ -1100,7 +1100,7 @@ Voici son arborescence:
     └── test.yml
 ```
 
-* tesks/main.yml
+* tasks/main.yml
 
 Ce manifest s'assure de l'installation de Docker et lance son service.
 ```yaml

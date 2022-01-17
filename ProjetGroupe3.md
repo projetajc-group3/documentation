@@ -1226,6 +1226,12 @@ Voici le stage que nous rajoutons au Jenkinsfile:
 ```
 
 ### G- Déploiement en Production
+
+Nous allons utiliser Kubernetes pour disposer d’une plateforme de déploiement résiliente et à haute disponibilité avec une configuration et une gestion simple à l'aide de nos manifestes. 
+
+Kubernetes nous permet de d'orchester nos conteneurs sur notre envirronement de production et de faire appel à l'image que nous avons contenerisé et déployé dans le registry Docker Hub.  
+
+
 <br>
 &nbsp;&nbsp;&nbsp; 1- Création d'un role Ansible "kubernetes_role"
 <br>
@@ -1251,7 +1257,8 @@ Voici son arborescence:
 
 * tasks/main.yml
 
-Ce manifest s'assure de l'installation de kubernetes et lance son service.
+Ce manifest s'assure de l'installation de kubernetes et lance son service. Il contient les différentes instruction afin d'installer kubernetes à l'aide de différentes taches.
+
 
 ```sh
 ---
@@ -1452,20 +1459,6 @@ tage ('Deploy application (PRODUCTION)') {
 
 
 
-# Kubernetes (minikube)
-
-## Pourquoi Kubernetes ?
-Avec Docker, nous disposons de commandes simples comme docker run ou docker stop pour démarrer/arrêter un conteneur . 
-
-Contrairement à ces commandes simples qui nous permettent d'effectuer des opérations sur un seul conteneur, il n'y a pas de commande docker deploy pour pousser de nouvelles images vers un groupe d'hôtes.
-
-De nombreux outils sont apparus ces derniers temps pour résoudre ce problème « d'orchestration de conteneurs » ; les plus populaires étant Docker Swarm (qui fait maintenant partie du moteur Docker) et Kubernetes. 
-
-Tous viennent avec leurs avantages et leurs inconvénients mais, Kubernetes prend une avance considérable en termes d'utilisation et de fonctionnalités.
-
-Kubernetes (également appelé «k8») fournit de puissantes abstractions qui dissocient complètement les opérations d'application telles que les déploiements et la mise à l'échelle des opérations d'infrastructure sous-jacentes. 
-
-Ainsi, avec Kubernetes, vous ne travaillez pas avec des hôtes ou des machines virtuelles individuels sur lesquels exécuter votre code, mais plutôt Kubernetes voit l'infrastructure sous-jacente comme une mer de calcul sur laquelle placer des conteneurs.
 
 ## Concepts Kubernetes
 Kubernetes a une architecture client/serveur. Le serveur Kubernetes s'exécute sur notre cluster (un d'hôte) sur lequel nous allons déployer notre application. Et nous interagissons  avec le cluster à l'aide du client kubectl.

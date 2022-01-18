@@ -1,8 +1,11 @@
-![Screenshot](images/ajc.png) ![Screenshot](images/umanis.png)</right>
+<img align = "left" src="images/ajc.png"> <img align = "right" src="images/umanis.png">
 
----------------------------------------------
-#  Projet Final : CICD d'une Application node  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18/01/2022
----------------------------------------------
+#  <div align = "center">Projet Final :<br> CICD d'une Application node</div>
+
+<br>
+<br>
+
+----------------------------------------------------------
 
 * Objectif:
 
@@ -13,6 +16,8 @@ Déploiement d'une application Node.js dans un pipeline Jenkins
     - Aurelien DAIX
     - Oussama ZAID 
     - Renaud SAUTOUR
+
+<br>
 
 # I- Introduction
 

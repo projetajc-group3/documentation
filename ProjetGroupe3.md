@@ -1681,4 +1681,4 @@ La mise en place d'un outil de monitoring de la production serait un plus pour l
 ## C- Ingress
 <br>
 
-Par défaut, les Services NodePort exposent nos containers sur le port 30001. Afin de rendre l'accès à l'url plus simple nous aurions pu utiliser un objet Kubernetes Ingress qui gère l'accès externe aux services dans un cluster, dans notre cas du trafic HTTP.
+Par défaut, les Services NodePort exposent nos containers sur le port 30001. Afin de rendre l'accès à l'url plus simple, il est aussi possible d'utiliser un objet Kubernetes Ingress qui gère l'accès externe aux services dans un cluster, dans notre cas du trafic HTTP.

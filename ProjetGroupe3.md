@@ -1677,3 +1677,8 @@ Quelques ligne de commandes du Jenkinsfile sont redondantes avec les roles Ansib
 <br>
 
 La mise en place d'un outil de monitoring de la production serait un plus pour le maintient de l'application mais aussi pour surveiller et améliorer les performance de déploiement ce qsui s'inscrit dans la philosophie DevOps.
+
+## C- Ingress
+<br>
+
+Par défaut, les Services NodePort exposent nos containers sur le port 30001. Afin de rendre l'accès à l'url plus simple nous aurions pu utiliser un objet Kubernetes Ingress qui gère l'accès externe aux services dans un cluster, dans notre cas du trafic HTTP.

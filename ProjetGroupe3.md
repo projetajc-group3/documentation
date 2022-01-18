@@ -65,7 +65,13 @@ Dans cette piste, nous couvrirons les fonctions de Terraform pour créer une inf
 
 # II- Préparation du projet
 
-## A- Prérequis 
+## A- Infrastructure cible du projet
+
+![Screenshot](images/workflow.jpg)
+
+<br>
+
+## B- Prérequis 
 
 * Compte GitHub (projetajc-group3)
 * Compte DockerHub (projetajcgroup3)
@@ -73,7 +79,7 @@ Dans cette piste, nous couvrirons les fonctions de Terraform pour créer une inf
 * Compte utilisateur AWS
 
 
-## B- Création des serveurs pour Jenkins sur AWS 
+## C- Création des serveurs pour Jenkins sur AWS 
 
 Nous utilisons ici Jenkins qui un serveur d'automatisation autonome et open source utilisé pour automatiser les tâches associées à la création, aux tests et à la livraison/déploiement de logiciels. Jenkins Pipeline implémente des pipelines de livraison continue dans Jenkins grâce à l'utilisation de plugins et d'un fichier Jenkins.
 
@@ -118,7 +124,7 @@ Résultat:
 * IPv4 publique de mon instance ec2 : `54.147.236.68`
 
 
-## C- Installation de Jenkins 
+## D- Installation de Jenkins 
 
 ### 1- Commande de l'installation de java
 
@@ -147,7 +153,7 @@ sudo systemctl start jenkins
 sudo systemctl status jenkins
 ```
 
-## D- Premier démarrage de Jenkins
+## E- Premier démarrage de Jenkins
 
 On se connecte sur le serveur Jenkins: http://54.174.144.82:8080/
 
@@ -174,7 +180,7 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ![Screenshot](images/Jenkins/6.png)
 ![Screenshot](images/Jenkins/7.png)
 
-## E- Paramétrage de l'agent Jenkins
+## F- Paramétrage de l'agent Jenkins
 
 Ce nouvel agent s'occupera exclusivement de tout la partie consistant à construire l'image docker, la lancer, la scanner, la tester et la pousser sur DockerHub. 
 Une fois ces tâches effectuées l'agent effacera toutes les données qui lui ont été passées pour être de nouveau fraîchement disponible pour un futur build.
@@ -232,7 +238,7 @@ stage ('<Nom du stage>') {
 ```
 <br>
 
-## F- Création du Backend
+## G- Création du Backend
 
 C'est une bonne pratique de traiter notre fichier d'état comme un secret et de le stocker à distance. 
 
@@ -247,7 +253,7 @@ Nous voulons nous assurer que notre option backend verrouille notre état lorsqu
 ![Screenshot](images/aws/n.png)
 ![Screenshot](images/aws/o.png)
 
-## G- Création du Pipeline
+## H- Création du Pipeline
 
 ### 1- Création du pipeline dans Jenkins
 

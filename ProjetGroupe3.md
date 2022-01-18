@@ -1317,7 +1317,9 @@ Ce manifest s'assure de l'installation de kubernetes et lance son service. Il co
 ```
 
 * meta/main.yml
+* 
 <br>
+
 ```sh
 ---
 galaxy_info:

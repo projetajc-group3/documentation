@@ -1344,9 +1344,9 @@ Nous allons crée un nouvel objet Service nommé "nodeport", qui cible le port T
 
 - port : port du service
 
-- tareget port : port du pod a utiliser (doit correcpondre à l'application)
+- tareget port : port du pod a utiliser (doit correspondre à l'application)
 
-- nodeport : port utilisable depuis l'extrieur du cluster (un genre de routeur)
+- nodeport : port utilisable depuis l'extrieur du cluster
 
 
 ```sh

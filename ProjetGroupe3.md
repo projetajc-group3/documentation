@@ -1,6 +1,6 @@
 <img align = "left" src="images/ajc.png"> <img align = "right" src="images/umanis.png">
 
-#  <div align = "center">Projet Final :<br> CICD d'une Application node</div>
+#  <div align = "center">PROJET FINAL:<br><br> CICD d'une Application node</div>
 
 <br>
 <br>
